@@ -28,10 +28,6 @@ const SWAGGER_OPTIONS = {
     ],
     tags: [
       {
-        name: 'Tasks',
-        description: 'API operations related to tasks, including creation, updates, and deletion.',
-      },
-      {
         name: 'Authentication',
         description:
           'API operations related to user login and authorization with cookie-based sessions.',
