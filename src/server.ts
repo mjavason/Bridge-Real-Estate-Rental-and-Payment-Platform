@@ -2,13 +2,15 @@ import { Server } from 'http';
 import 'express-async-errors';
 import app from './app';
 import logger from './helpers/logger';
-import { testConnection } from './config/sequelize';
+import sequelize from './config/sequelize';
+// import { testConnection } from './config/sequelize';
 
 // setting up server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 const server: Server = app.listen(PORT, async () => {
-  await testConnection();
+  // await testConnection();
+  await sequelize.sync();
   logger.info(`Server running on port ${PORT}`);
 });
 
