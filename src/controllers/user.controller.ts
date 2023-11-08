@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
 import {
   NotFoundResponse,
   ForbiddenResponse,
@@ -10,7 +9,7 @@ import {
   BadRequestResponse,
   AccessTokenErrorResponse,
 } from '../helpers/response';
-import { resetTokenService, userService } from '../services';
+import { /*resetTokenService,*/ userService } from '../services';
 import logger from '../helpers/logger';
 import { signJwt, verifyJwt } from '../utils/jwt';
 import { ACCESS_TOKEN_SECRET, JWT_SECRET, MESSAGES, REFRESH_TOKEN_SECRET } from '../constants';
@@ -22,10 +21,7 @@ async function hashPassword(password: string) {
 }
 class Controller {
   async register(req: Request, res: Response) {
-    // const cwd = process.cwd();
-    // console.log('Current working directory:', cwd);
-
-    let existing_user = await userService.findOne({ email: req.body.email });
+    let existingUser = await userService.findOne({ email: req.body.email });
 
     //Hash password
     try {
@@ -37,17 +33,17 @@ class Controller {
       return InternalErrorResponse(res);
     }
 
-    if (existing_user) return ForbiddenResponse(res, 'User already exists');
+    if (existingUser) return ForbiddenResponse(res, 'User already exists');
     const data = await userService.create(req.body);
 
     if (!data) return InternalErrorResponse(res);
 
-    let token = await signJwt({ _id: data._id }, JWT_SECRET, '1h');
+    let token = await signJwt({ id: data.id }, JWT_SECRET, '1h');
 
     let sendMail = await mailController.sendWelcomeMail(
       req.body.email,
-      req.body.first_name,
-      req.body.last_name,
+      req.body.firstName,
+      req.body.lastName,
       token,
     );
 
@@ -75,13 +71,9 @@ class Controller {
     }
 
     // Passwords match, user is authenticated
-    const { _id, role } = user;
+    const { id, role } = user;
 
-    let accessToken = await signJwt({ _id, role, email }, ACCESS_TOKEN_SECRET, '48h');
-    let refreshToken = await signJwt({ _id, role, email }, REFRESH_TOKEN_SECRET, '24h');
-    let magicLinkToken = await signJwt({ _id, role, email }, JWT_SECRET, '3m');
-
-    // res.cookie('token', accessToken, { httpOnly: true });
+    let magicLinkToken = await signJwt({ id, role, email }, JWT_SECRET, '3m');
 
     mailController.sendMagicLinkEmail(user.email, magicLinkToken);
 
@@ -89,14 +81,6 @@ class Controller {
       res,
       'We sent you a verification link to your email address. Click the link to sign-in on this device. Expires in 3 minutes',
     );
-
-    // let data = {
-    //   access_token: accessToken,
-    //   refresh_token: refreshToken,
-    // };
-
-    // Return a success response or the token, depending on your authentication method
-    // return SuccessResponse(res, data, MESSAGES.LOGGED_IN);
   }
 
   async authorizeUserFromMagicLink(req: Request, res: Response) {
@@ -106,72 +90,72 @@ class Controller {
     const decoded = await verifyJwt(token, JWT_SECRET);
     if (!decoded) return AccessTokenErrorResponse(res, 'Unauthorized! Invalid token');
 
-    const { _id, role, email } = decoded;
+    const { id, role, email } = decoded;
 
-    let accessToken = await signJwt({ _id, role, email }, ACCESS_TOKEN_SECRET, '48h');
+    let accessToken = await signJwt({ id, role, email }, ACCESS_TOKEN_SECRET, '48h');
 
     res.cookie('token', accessToken, { httpOnly: true });
 
     return SuccessMsgResponse(res, MESSAGES.LOGGED_IN);
   }
 
-  async resetPasswordMail(req: Request, res: Response) {
-    const { email } = req.body;
+  // async resetPasswordMail(req: Request, res: Response) {
+  //   const { email } = req.body;
 
-    // Find the user by email
-    const user = await userService.findOne({ email });
+  //   // Find the user by email
+  //   const user = await userService.findOne({ email });
 
-    if (!user) return NotFoundResponse(res, 'User not found');
+  //   if (!user) return NotFoundResponse(res, 'User not found');
 
-    // Generate a unique reset token
-    const token = crypto.randomBytes(32).toString('hex');
+  //   // Generate a unique reset token
+  //   const token = crypto.randomBytes(32).toString('hex');
 
-    // Set the expiration date to 1 hour from now
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1);
+  //   // Set the expiration date to 1 hour from now
+  //   const expiresAt = new Date();
+  //   expiresAt.setHours(expiresAt.getHours() + 1);
 
-    // Save the reset token to the database
-    const resetToken = await resetTokenService.create({ user: user._id, token, expiresAt });
+  //   // Save the reset token to the database
+  //   const resetToken = await resetTokenService.create({ user: user.id, token, expiresAt });
 
-    // Send the password reset email
-    let mailSent = await mailController.sendPasswordResetEmail(email, token);
+  //   // Send the password reset email
+  //   let mailSent = await mailController.sendPasswordResetEmail(email, token);
 
-    if (!mailSent) return InternalErrorResponse(res, 'Error sending password reset email');
+  //   if (!mailSent) return InternalErrorResponse(res, 'Error sending password reset email');
 
-    return SuccessMsgResponse(res, 'Password reset email sent successfully');
-  }
+  //   return SuccessMsgResponse(res, 'Password reset email sent successfully');
+  // }
 
-  async resetPassword(req: Request, res: Response) {
-    const { token } = req.params;
-    const { newPassword } = req.body;
+  // async resetPassword(req: Request, res: Response) {
+  //   const { token } = req.params;
+  //   const { newPassword } = req.body;
 
-    // Find the reset token in the database
-    const resetToken = await resetTokenService.findOne({ token });
+  //   // Find the reset token in the database
+  //   const resetToken = await resetTokenService.findOne({ token });
 
-    if (!resetToken || resetToken.expiresAt < new Date())
-      return ForbiddenResponse(res, 'Invalid or expired token');
+  //   if (!resetToken || resetToken.expiresAt < new Date())
+  //     return ForbiddenResponse(res, 'Invalid or expired token');
 
-    // Find the associated user and update their password
-    const user = await userService.findOne({ user: resetToken.user });
+  //   // Find the associated user and update their password
+  //   const user = await userService.findOne({ user: resetToken.user });
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
+  //   if (!user) return res.status(404).json({ message: 'User not found' });
 
-    let hashedPassword = await hashPassword(newPassword);
-    let updatedUser = await userService.update({ _id: user._id }, { password: hashedPassword });
+  //   let hashedPassword = await hashPassword(newPassword);
+  //   let updatedUser = await userService.update({ id: user.id }, { password: hashedPassword });
 
-    if (!updatedUser) return InternalErrorResponse(res, 'Unable to update password');
+  //   if (!updatedUser) return InternalErrorResponse(res, 'Unable to update password');
 
-    // Delete the used reset token
-    let usedToken = await resetTokenService.softDelete({ _id: resetToken._id });
+  //   // Delete the used reset token
+  //   let usedToken = await resetTokenService.softDelete({ id: resetToken.id });
 
-    if (!usedToken) return InternalErrorResponse(res, 'Unable to delete token');
+  //   if (!usedToken) return InternalErrorResponse(res, 'Unable to delete token');
 
-    return SuccessMsgResponse(res, 'Password reset successful');
-  }
+  //   return SuccessMsgResponse(res, 'Password reset successful');
+  // }
 
   async update(req: Request, res: Response) {
     const { id } = req.params;
-    const data = await userService.update({ _id: id }, req.body);
+    const data = await userService.update({ id: id }, req.body);
 
     if (!data) return NotFoundResponse(res);
 

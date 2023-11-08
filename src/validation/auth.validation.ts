@@ -4,8 +4,8 @@ class Validation {
   // Validation schema for user registration
   register = {
     body: z.object({
-      first_name: z.string().min(1).max(255),
-      last_name: z.string().min(1).max(255),
+      firstName: z.string().min(1).max(255),
+      lastName: z.string().min(1).max(255),
       email: z.string().min(1).max(255).email(), // Check for a valid email address
       role: z.enum(['user', 'admin']),
       password: z.string().min(5), // Adjust the password requirements as needed

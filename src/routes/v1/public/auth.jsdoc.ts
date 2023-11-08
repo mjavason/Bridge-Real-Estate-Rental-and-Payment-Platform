@@ -139,11 +139,11 @@
  *     RegisterSchema:
  *       type: object
  *       properties:
- *         first_name:
+ *         firstName:
  *           type: string
  *           minLength: 1
  *           maxLength: 255
- *         last_name:
+ *         lastName:
  *           type: string
  *           minLength: 1
  *           maxLength: 255

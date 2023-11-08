@@ -1,9 +1,10 @@
 interface IUser {
-  first_name: string;
-  last_name: string;
+  id?: number | string;
+  firstName: string;
+  lastName: string;
   email: string;
   role: string; //user or admin or client or tenant
-  account_balance: number;
+  accountBalance: number;
   password: string;
   deleted?: boolean;
 }

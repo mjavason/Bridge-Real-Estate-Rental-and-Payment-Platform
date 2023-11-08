@@ -10,17 +10,17 @@ import { authValidation } from '../../../validation';
 
 router.get('/magic/:token', userController.authorizeUserFromMagicLink);
 
-router.post(
-  '/reset-password-email/:email',
-  processRequestParams(authValidation.resetPasswordEmail.params),
-  userController.resetPasswordMail,
-);
+// router.post(
+//   '/reset-password-email/:email',
+//   processRequestParams(authValidation.resetPasswordEmail.params),
+//   userController.resetPasswordMail,
+// );
 
-router.post(
-  '/reset-password/:token',
-  processRequestBody(authValidation.resetPasswordToken.body),
-  userController.resetPassword,
-);
+// router.post(
+//   '/reset-password/:token',
+//   processRequestBody(authValidation.resetPasswordToken.body),
+//   userController.resetPassword,
+// );
 
 router.post('/register', processRequestBody(authValidation.register.body), userController.register);
 

@@ -41,7 +41,7 @@ class TaskValidation {
   // Validation schema for retrieving tasks with specific criteria
   find = {
     query: z.object({
-      _id: z.string().optional(),
+      id: z.string().optional(),
       user: z.string().optional(),
       title: z.string().optional(),
       description: z.string().optional(),

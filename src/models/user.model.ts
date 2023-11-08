@@ -2,15 +2,15 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/sequelize';
 import IUser from '../interfaces/user.interface';
 
-class UserModel extends Model<IUser> {}
+class User extends Model<IUser> {}
 
-UserModel.init(
+User.init(
   {
-    first_name: {
+    firstName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    last_name: {
+    lastName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -23,8 +23,8 @@ UserModel.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    account_balance: {
-      type: DataTypes.NUMBER,
+    accountBalance: {
+      type: DataTypes.INTEGER,
       defaultValue: 0,
     },
     password: {
@@ -41,4 +41,4 @@ UserModel.init(
   },
 );
 
-export default UserModel;
+export default User;
