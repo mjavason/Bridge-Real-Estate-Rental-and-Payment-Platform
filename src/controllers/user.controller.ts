@@ -13,9 +13,18 @@ import logger from '../helpers/logger';
 import { signJwt, verifyJwt } from '../utils/jwt';
 import { ACCESS_TOKEN_SECRET, JWT_SECRET, MESSAGES } from '../constants';
 import { MailController } from './mail.controller';
-import { controller, httpDelete, httpGet, httpPost } from 'inversify-express-utils';
+import {
+  controller,
+  httpDelete,
+  httpGet,
+  httpPost,
+  request,
+  response,
+} from 'inversify-express-utils';
 import { inject } from 'inversify';
 import { UserService } from '../services/user.service';
+import { LoginDTO, RegisterUserDTO } from '../dto/auth.dto';
+import { validateBodyDto } from '../middleware/body.validation.middleware';
 
 @controller('/auth')
 export class UserController {
@@ -35,7 +44,7 @@ export class UserController {
     return SuccessResponse(res, data);
   }
 
-  @httpPost('/register')
+  @httpPost('/register', validateBodyDto(RegisterUserDTO))
   async register(req: Request, res: Response) {
     const existingUser = await this.userService.findOne({ email: req.body.email });
 
@@ -69,7 +78,7 @@ export class UserController {
     return SuccessResponse(res, data);
   }
 
-  @httpPost('/login')
+  @httpPost('/login', validateBodyDto(LoginDTO))
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
 

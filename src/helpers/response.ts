@@ -36,10 +36,23 @@ export function ForbiddenResponse(res: Response, message = MESSAGES.FORBIDDEN): 
     .send({ success: false, status_code: StatusCode.FAILURE, message });
 }
 
-export function BadRequestResponse(res: Response, message = MESSAGES.BAD_PARAMETERS): Response {
+export function BadRequestResponse(
+  res: Response,
+  message: string | object = MESSAGES.BAD_PARAMETERS,
+): Response {
   return res
     .status(ResponseStatus.BAD_REQUEST)
     .send({ success: false, status_code: StatusCode.FAILURE, message });
+}
+
+export function BadRequestResponseWithError(
+  res: Response,
+  error: object,
+  message = MESSAGES.BAD_PARAMETERS,
+): Response {
+  return res
+    .status(ResponseStatus.BAD_REQUEST)
+    .send({ success: false, status_code: StatusCode.FAILURE, message, error });
 }
 
 export function ForbiddenButWeMoveResponse<T>(

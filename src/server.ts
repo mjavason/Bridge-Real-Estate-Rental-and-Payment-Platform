@@ -12,9 +12,9 @@ import handleRouteNotFound from './middleware/url_not_found.middleware';
 const PORT = process.env.PORT || 3000;
 
 // Set up the Inversify server
-const server = new InversifyExpressServer(container, null, { rootPath: '/api/v' }, app);
+const server = new InversifyExpressServer(container, null, { rootPath: '/api/v1' }, app);
 
-app.use(handleRouteNotFound);
+// app.use(handleRouteNotFound);
 
 server.build().listen(PORT, async () => {
   // await testConnection();
