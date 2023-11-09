@@ -1,6 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/sequelize';
 import IUser from '../interfaces/user.interface';
+import House from './house.model';
 
 class User extends Model<IUser> {}
 
@@ -18,6 +19,9 @@ User.init(
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
+      validate: {
+        isEmail: true,
+      },
     },
     role: {
       type: DataTypes.STRING,
@@ -44,13 +48,7 @@ User.init(
   },
 );
 
-// // Exclude password when querying the model
-// User.prototype.toJSON = function () {
-//   const values = Object.assign({}, this.get());
-
-//   // Exclude password field
-//   delete values.password;
-//   return values;
-// };
+// Define the association between User and House
+User.hasMany(House);
 
 export default User;

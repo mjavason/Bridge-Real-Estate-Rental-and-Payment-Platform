@@ -12,16 +12,4 @@
  *         description: Bad request
  *       '404':
  *         description: Profile not found
- *     security:
- *       - bearerAuth: []  # Use the "bearerAuth" security definition
- */
-
-/**
- *  @swagger
- * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
  */
