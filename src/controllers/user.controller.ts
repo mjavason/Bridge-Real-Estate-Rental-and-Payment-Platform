@@ -81,7 +81,7 @@ export class UserController {
   //   @httpGet('/count')
   async getCount(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.userService.getCount(req.query);
+      const data = await this.userService.count(req.query);
 
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, { data: 0 });

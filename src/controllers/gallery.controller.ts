@@ -10,18 +10,18 @@ import {
   response,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { HouseService } from '../services/house.service';
+import { GalleryService } from '../services/gallery.service';
 
 import isAuth from '../middleware/is_auth.middleware';
 
-@controller('/house', isAuth)
-export class HouseController {
-  constructor(@inject(HouseService) private houseService: HouseService) {}
+@controller('/gallery', isAuth)
+export class GalleryController {
+  constructor(@inject(GalleryService) private galleryService: GalleryService) {}
 
   //   @httpPost('/')
   async create(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.houseService.create(req.body);
+      const data = await this.galleryService.create(req.body);
 
       if (!data) return InternalErrorResponse(res);
 
@@ -40,7 +40,7 @@ export class HouseController {
 
       pagination = (pagination - 1) * 10;
 
-      const data = await this.houseService.getAll(pagination);
+      const data = await this.galleryService.getAll(pagination);
 
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
@@ -54,7 +54,7 @@ export class HouseController {
   //   @httpGet('/exists')
   async exists(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.houseService.exists(req.query);
+      const data = await this.galleryService.exists(req.query);
 
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, []);
@@ -68,7 +68,7 @@ export class HouseController {
   //   @httpGet('/count')
   async getCount(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.houseService.count(req.query);
+      const data = await this.galleryService.count(req.query);
 
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, { data: 0 });
@@ -82,7 +82,7 @@ export class HouseController {
   //   @httpGet('/')
   async find(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.houseService.find(req.query);
+      const data = await this.galleryService.find(req.query);
 
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
@@ -97,7 +97,7 @@ export class HouseController {
   async update(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.houseService.update({ id: id }, req.body);
+      const data = await this.galleryService.update({ id: id }, req.body);
 
       if (!data) return NotFoundResponse(res);
 
@@ -111,7 +111,7 @@ export class HouseController {
   async delete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.houseService.softDelete({ id: id });
+      const data = await this.galleryService.softDelete({ id: id });
 
       if (!data) return NotFoundResponse(res);
 
@@ -126,7 +126,7 @@ export class HouseController {
   async hardDelete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.houseService.hardDelete({ id: id });
+      const data = await this.galleryService.hardDelete({ id: id });
 
       if (!data) return NotFoundResponse(res);
 

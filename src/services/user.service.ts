@@ -216,7 +216,7 @@ export class UserService {
    * @param {object} searchData - The criteria to search for documents.
    * @returns {Promise<number | null>} - The count of documents or null if an error occurs.
    */
-  async getCount(searchData: object): Promise<number | null> {
+  async count(searchData: object): Promise<number | null> {
     try {
       const count = await UserModel.count({
         where: { ...searchData, deleted: false },

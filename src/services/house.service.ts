@@ -8,16 +8,6 @@ import { injectable } from 'inversify';
  */
 @injectable()
 export class HouseService {
-  /**
-   * Hash a text
-   *
-   * @param {string} text - Text to be hashed.
-   * @returns {Promise<string>} Hashed string.
-   */
-  async hashPassword(text: string) {
-    const saltRounds = 10; // You can adjust the number of rounds for security
-    return await bcrypt.hash(text, saltRounds);
-  }
 
   /**
    * Create a new house.
@@ -122,29 +112,6 @@ export class HouseService {
     }
   }
 
-  /**
-   * Find a house based on search criteria and include the password field.
-   *
-   * @param {Partial<IHouse>} searchData - Search criteria.
-   * @returns {Promise<IHouse|null>} The house matching the search criteria with the password field or null if not found or on error.
-   */
-  async findOneReturnPassword(searchData: Partial<IHouse>) {
-    try {
-      const house = await HouseModel.findOne({
-        where: { ...searchData, deleted: false },
-        attributes: { include: ['password'] },
-      });
-
-      if (house) {
-        return house.get();
-      }
-
-      return null;
-    } catch (error: any) {
-      console.error('Error in findOneReturnPassword:', error.message);
-      return null;
-    }
-  }
 
   /**
    * Soft delete a house based on search criteria.
@@ -216,7 +183,7 @@ export class HouseService {
    * @param {object} searchData - The criteria to search for documents.
    * @returns {Promise<number | null>} - The count of documents or null if an error occurs.
    */
-  async getCount(searchData: object): Promise<number | null> {
+  async count(searchData: object): Promise<number | null> {
     try {
       const count = await HouseModel.count({
         where: { ...searchData, deleted: false },
