@@ -1,9 +1,9 @@
 import nodeMailer from 'nodemailer';
-import { MAIL_ADDRESS, MAIL_PASSWORD, SITE_LINK } from '../constants';
+import { MAIL_ADDRESS, MAIL_PASSWORD } from '../constants';
 const fs = require('fs');
 const handlebars = require('handlebars');
-import { SuccessMsgResponse } from '../helpers/response';
 import logger from '../helpers/logger';
+import { injectable } from 'inversify';
 
 // Email account setup and login. You need to pass in your email credentials and use this app to control it.
 const transporter = nodeMailer.createTransport({
@@ -16,7 +16,8 @@ const transporter = nodeMailer.createTransport({
   },
 });
 
-class Service {
+@injectable()
+export class MailService {
   sendMail = async (recipientEmail: string, mailHtmlBody: string, mailSubject: string) => {
     // This is where the actual email message is built. Things like CC, recipients, attachments, and so on are configured here.
     return await transporter.sendMail({
@@ -43,5 +44,3 @@ class Service {
     }
   }
 }
-
-export const mailService = new Service();

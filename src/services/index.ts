@@ -4,5 +4,5 @@
 // export { whatever } from './whatever';
 
 export * from './api.service';
-export { userService } from './user.service';
-export { mailService } from './mail.service';
+export { MailService } from './mail.service';
+export { UserService } from './user.service';

@@ -9,23 +9,39 @@ import {
   BadRequestResponse,
   AccessTokenErrorResponse,
 } from '../helpers/response';
-import { /*resetTokenService,*/ userService } from '../services';
 import logger from '../helpers/logger';
 import { signJwt, verifyJwt } from '../utils/jwt';
 import { ACCESS_TOKEN_SECRET, JWT_SECRET, MESSAGES, REFRESH_TOKEN_SECRET } from '../constants';
-import { mailController } from '../controllers';
+import { MailController } from './mail.controller';
+import { controller, httpDelete, httpGet, httpPost } from 'inversify-express-utils';
+import { inject } from 'inversify';
+import { UserService } from '../services/user.service';
 
-async function hashPassword(password: string) {
-  const saltRounds = 10; // You can adjust the number of rounds for security
-  return await bcrypt.hash(password, saltRounds);
-}
-class Controller {
+@controller('/auth')
+export class UserController {
+  constructor(
+    @inject(UserService) private userService: UserService,
+    @inject(MailController) private mailController: MailController,
+  ) {}
+
+  @httpGet('/')
+  async getAllUsers(req: Request, res: Response) {
+    const data = await this.userService.getAll();
+
+    if (!data) return InternalErrorResponse(res);
+
+    if (data.length === 0) return NotFoundResponse(res);
+
+    return SuccessResponse(res, data);
+  }
+
+  @httpPost('/register')
   async register(req: Request, res: Response) {
-    let existingUser = await userService.findOne({ email: req.body.email });
+    let existingUser = await this.userService.findOne({ email: req.body.email });
 
     //Hash password
     try {
-      const hashedPassword = await hashPassword(req.body.password);
+      const hashedPassword = await this.userService.hashPassword(req.body.password);
       req.body.password = hashedPassword;
     } catch (error) {
       logger.error('Password hash failed');
@@ -34,13 +50,13 @@ class Controller {
     }
 
     if (existingUser) return ForbiddenResponse(res, 'User already exists');
-    const data = await userService.create(req.body);
+    const data = await this.userService.create(req.body);
 
     if (!data) return InternalErrorResponse(res);
 
     let token = await signJwt({ id: data.id }, JWT_SECRET, '1h');
 
-    let sendMail = await mailController.sendWelcomeMail(
+    let sendMail = await this.mailController.sendWelcomeMail(
       req.body.email,
       req.body.firstName,
       req.body.lastName,
@@ -53,11 +69,12 @@ class Controller {
     return SuccessResponse(res, data);
   }
 
+  @httpPost('/login')
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
 
     // Find the user by email
-    const user = await userService.findOneReturnPassword({ email });
+    const user = await this.userService.findOneReturnPassword({ email });
 
     if (!user) return NotFoundResponse(res, 'User not found');
 
@@ -75,7 +92,7 @@ class Controller {
 
     let magicLinkToken = await signJwt({ id, role, email }, JWT_SECRET, '3m');
 
-    mailController.sendMagicLinkEmail(user.email, magicLinkToken);
+    this.mailController.sendMagicLinkEmail(user.email, magicLinkToken);
 
     return SuccessMsgResponse(
       res,
@@ -103,7 +120,7 @@ class Controller {
   //   const { email } = req.body;
 
   //   // Find the user by email
-  //   const user = await userService.findOne({ email });
+  //   const user = await this.userService.findOne({ email });
 
   //   if (!user) return NotFoundResponse(res, 'User not found');
 
@@ -136,12 +153,12 @@ class Controller {
   //     return ForbiddenResponse(res, 'Invalid or expired token');
 
   //   // Find the associated user and update their password
-  //   const user = await userService.findOne({ user: resetToken.user });
+  //   const user = await this.userService.findOne({ user: resetToken.user });
 
   //   if (!user) return res.status(404).json({ message: 'User not found' });
 
   //   let hashedPassword = await hashPassword(newPassword);
-  //   let updatedUser = await userService.update({ id: user.id }, { password: hashedPassword });
+  //   let updatedUser = await this.userService.update({ id: user.id }, { password: hashedPassword });
 
   //   if (!updatedUser) return InternalErrorResponse(res, 'Unable to update password');
 
@@ -155,13 +172,14 @@ class Controller {
 
   async update(req: Request, res: Response) {
     const { id } = req.params;
-    const data = await userService.update({ id: id }, req.body);
+    const data = await this.userService.update({ id: id }, req.body);
 
     if (!data) return NotFoundResponse(res);
 
     return SuccessResponse(res, data, MESSAGES.UPDATED);
   }
 
+  @httpDelete('/logout')
   async logout(req: Request, res: Response) {
     const token = req.cookies.token;
 
@@ -172,5 +190,3 @@ class Controller {
     return SuccessMsgResponse(res, 'Logged out successfully');
   }
 }
-
-export const userController = new Controller();

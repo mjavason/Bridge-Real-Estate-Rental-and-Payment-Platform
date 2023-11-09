@@ -3,5 +3,5 @@
 // export = './whatever'
 // export { whatever } from './whatever';
 
-export { userController } from './user.controller';
-export { mailController } from './mail.controller';
+export { UserController } from './user.controller';
+export { MailController } from './mail.controller';

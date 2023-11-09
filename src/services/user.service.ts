@@ -1,10 +1,24 @@
 import UserModel from '../models/user.model';
 import IUser from '../interfaces/user.interface';
+import bcrypt from 'bcrypt';
+import { injectable } from 'inversify';
 
 /**
  * Service class for user-related operations.
  */
-class UserService {
+@injectable()
+export class UserService {
+  /**
+   * Hash a text
+   *
+   * @param {string} text - Text to be hashed.
+   * @returns {Promise<string>} Hashed string.
+   */
+  async hashPassword(text: string) {
+    const saltRounds = 10; // You can adjust the number of rounds for security
+    return await bcrypt.hash(text, saltRounds);
+  }
+
   /**
    * Create a new user.
    *
@@ -27,7 +41,7 @@ class UserService {
    * @param {number} pagination - Offset for pagination.
    * @returns {Promise<IUser[]|null>} An array of users or null on error.
    */
-  async getAll(pagination: number) {
+  async getAll(pagination: number = 0) {
     try {
       const users = await UserModel.findAll({
         where: { deleted: false },
@@ -196,5 +210,3 @@ class UserService {
     }
   }
 }
-
-export const userService = new UserService();

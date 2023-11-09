@@ -1,8 +1,15 @@
-import { mailService, userService } from '../services';
+import { MailService, UserService } from '../services';
 import { APP_NAME, SITE_LINK } from '../constants';
 import logger from '../helpers/logger';
+import { inject, injectable } from 'inversify';
 
-class Controller {
+@injectable()
+export class MailController {
+  constructor(
+    @inject(UserService) private userService: UserService,
+    @inject(MailService) private mailService: MailService,
+  ) {}
+
   async sendWelcomeMail(email: string, firstName: string, lastName: string, token: string) {
     // Load the email template
     const templatePath = 'src/templates/welcome.html';
@@ -16,11 +23,11 @@ class Controller {
       confirmationLink: confirmationLink,
     };
     // Compile the template
-    const compiledTemplate = await mailService.renderMailTemplate(templatePath, data);
+    const compiledTemplate = await this.mailService.renderMailTemplate(templatePath, data);
 
     if (!compiledTemplate) return false;
     // Send the email
-    const info = await mailService.sendMail(
+    const info = await this.mailService.sendMail(
       email,
       compiledTemplate,
       `${APP_NAME} #100DaysOfAPIAwesomeness Welcome`,
@@ -33,7 +40,7 @@ class Controller {
 
   // Send the reset email
   async sendPasswordResetEmail(email: string, token: string) {
-    let user = await userService.findOne({ email });
+    let user = await this.userService.findOne({ email });
     if (!user) {
       console.log(`User with email: ${email} does not exist`);
       return false;
@@ -45,7 +52,7 @@ class Controller {
       passwordResetLink: resetLink,
     };
 
-    const renderedEmail = await mailService.renderMailTemplate(
+    const renderedEmail = await this.mailService.renderMailTemplate(
       'src/templates/password_reset.html',
       data,
     );
@@ -56,7 +63,7 @@ class Controller {
     }
 
     // Send the email
-    const info = await mailService.sendMail(email, renderedEmail, 'Password reset');
+    const info = await this.mailService.sendMail(email, renderedEmail, 'Password reset');
 
     console.log(`Password reset email sent to: ${email}`);
 
@@ -74,11 +81,11 @@ class Controller {
       magicLink: magicLink,
     };
     // Compile the template
-    const compiledTemplate = await mailService.renderMailTemplate(templatePath, data);
+    const compiledTemplate = await this.mailService.renderMailTemplate(templatePath, data);
 
     if (!compiledTemplate) return false;
     // Send the email
-    const info = await mailService.sendMail(
+    const info = await this.mailService.sendMail(
       email,
       compiledTemplate,
       `${APP_NAME} #100DaysOfAPIAwesomeness`,
@@ -89,5 +96,3 @@ class Controller {
     return { info };
   }
 }
-
-export const mailController = new Controller();
