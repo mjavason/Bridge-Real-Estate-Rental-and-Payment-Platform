@@ -1,6 +1,5 @@
 import { MailService, UserService } from '../services';
 import { APP_NAME, SITE_LINK } from '../constants';
-import logger from '../helpers/logger';
 import { inject, injectable } from 'inversify';
 
 @injectable()
@@ -40,7 +39,7 @@ export class MailController {
 
   // Send the reset email
   async sendPasswordResetEmail(email: string, token: string) {
-    let user = await this.userService.findOne({ email });
+    const user = await this.userService.findOne({ email });
     if (!user) {
       console.log(`User with email: ${email} does not exist`);
       return false;

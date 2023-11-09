@@ -1,4 +1,3 @@
-
 /**
  * @swagger
  * /auth/magic/{token}:

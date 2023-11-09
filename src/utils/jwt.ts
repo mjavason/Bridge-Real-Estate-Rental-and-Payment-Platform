@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../constants';
 
 async function signJwt(payload: object, signature = JWT_SECRET, expiresIn?: string | number) {

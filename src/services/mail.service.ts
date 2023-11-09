@@ -1,7 +1,7 @@
 import nodeMailer from 'nodemailer';
 import { MAIL_ADDRESS, MAIL_PASSWORD } from '../constants';
-const fs = require('fs');
-const handlebars = require('handlebars');
+import fs from 'fs';
+import handlebars from 'handlebars';
 import logger from '../helpers/logger';
 import { injectable } from 'inversify';
 

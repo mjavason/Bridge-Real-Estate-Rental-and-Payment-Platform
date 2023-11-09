@@ -11,7 +11,7 @@ import {
 } from '../helpers/response';
 import logger from '../helpers/logger';
 import { signJwt, verifyJwt } from '../utils/jwt';
-import { ACCESS_TOKEN_SECRET, JWT_SECRET, MESSAGES, REFRESH_TOKEN_SECRET } from '../constants';
+import { ACCESS_TOKEN_SECRET, JWT_SECRET, MESSAGES } from '../constants';
 import { MailController } from './mail.controller';
 import { controller, httpDelete, httpGet, httpPost } from 'inversify-express-utils';
 import { inject } from 'inversify';
@@ -37,7 +37,7 @@ export class UserController {
 
   @httpPost('/register')
   async register(req: Request, res: Response) {
-    let existingUser = await this.userService.findOne({ email: req.body.email });
+    const existingUser = await this.userService.findOne({ email: req.body.email });
 
     //Hash password
     try {
@@ -54,9 +54,9 @@ export class UserController {
 
     if (!data) return InternalErrorResponse(res);
 
-    let token = await signJwt({ id: data.id }, JWT_SECRET, '1h');
+    const token = await signJwt({ id: data.id }, JWT_SECRET, '1h');
 
-    let sendMail = await this.mailController.sendWelcomeMail(
+    const sendMail = await this.mailController.sendWelcomeMail(
       req.body.email,
       req.body.firstName,
       req.body.lastName,
@@ -90,7 +90,7 @@ export class UserController {
     // Passwords match, user is authenticated
     const { id, role } = user;
 
-    let magicLinkToken = await signJwt({ id, role, email }, JWT_SECRET, '3m');
+    const magicLinkToken = await signJwt({ id, role, email }, JWT_SECRET, '3m');
 
     this.mailController.sendMagicLinkEmail(user.email, magicLinkToken);
 
@@ -109,7 +109,7 @@ export class UserController {
 
     const { id, role, email } = decoded;
 
-    let accessToken = await signJwt({ id, role, email }, ACCESS_TOKEN_SECRET, '48h');
+    const accessToken = await signJwt({ id, role, email }, ACCESS_TOKEN_SECRET, '48h');
 
     res.cookie('token', accessToken, { httpOnly: true });
 
