@@ -3,7 +3,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { BadRequestResponse, BadRequestResponseWithError } from '../helpers/response';
+import { BadRequestResponseWithError } from '../helpers/response';
 
 export function validateBodyDto(dtoClass: any) {
   return (req: Request, res: Response, next: NextFunction) => {

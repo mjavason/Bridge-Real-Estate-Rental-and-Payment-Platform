@@ -37,8 +37,20 @@ User.init(
   },
   {
     sequelize,
+    defaultScope: {
+      attributes: { exclude: ['password', 'deleted'] },
+    },
     timestamps: true,
   },
 );
+
+// // Exclude password when querying the model
+// User.prototype.toJSON = function () {
+//   const values = Object.assign({}, this.get());
+
+//   // Exclude password field
+//   delete values.password;
+//   return values;
+// };
 
 export default User;

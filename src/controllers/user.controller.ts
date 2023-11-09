@@ -1,201 +1,151 @@
 import { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
-import {
-  NotFoundResponse,
-  ForbiddenResponse,
-  InternalErrorResponse,
-  SuccessMsgResponse,
-  SuccessResponse,
-  BadRequestResponse,
-  AccessTokenErrorResponse,
-} from '../helpers/response';
-import logger from '../helpers/logger';
-import { signJwt, verifyJwt } from '../utils/jwt';
-import { ACCESS_TOKEN_SECRET, JWT_SECRET, MESSAGES } from '../constants';
-import { MailController } from './mail.controller';
+import { SuccessResponse, InternalErrorResponse, NotFoundResponse } from '../helpers/response';
+import { MESSAGES } from '../constants';
 import {
   controller,
-  httpDelete,
+  //   httpDelete,
   httpGet,
-  httpPost,
+  //   httpPost,
   request,
   response,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
 import { UserService } from '../services/user.service';
-import { LoginDTO, RegisterUserDTO } from '../dto/auth.dto';
-import { validateBodyDto } from '../middleware/body.validation.middleware';
 
-@controller('/auth')
+import isAuth from '../middleware/is_auth.middleware';
+
+@controller('/user', isAuth)
 export class UserController {
-  constructor(
-    @inject(UserService) private userService: UserService,
-    @inject(MailController) private mailController: MailController,
-  ) {}
+  constructor(@inject(UserService) private userService: UserService) {}
+
+  //   @httpPost('/')
+  async create(@request() req: Request, @response() res: Response) {
+    try {
+      const data = await this.userService.create(req.body);
+
+      if (!data) return InternalErrorResponse(res);
+
+      return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
 
   @httpGet('/')
-  async getAllUsers(req: Request, res: Response) {
-    const data = await this.userService.getAll();
-
-    if (!data) return InternalErrorResponse(res);
-
-    if (data.length === 0) return NotFoundResponse(res);
-
-    return SuccessResponse(res, data);
-  }
-
-  @httpPost('/register', validateBodyDto(RegisterUserDTO))
-  async register(req: Request, res: Response) {
-    const existingUser = await this.userService.findOne({ email: req.body.email });
-
-    //Hash password
+  async getUserProfile(@request() req: Request, @response() res: Response) {
     try {
-      const hashedPassword = await this.userService.hashPassword(req.body.password);
-      req.body.password = hashedPassword;
-    } catch (error) {
-      logger.error('Password hash failed');
-      console.log(error);
-      return InternalErrorResponse(res);
+      const data = await this.userService.findOne({ id: res.locals.user.id });
+
+      if (!data) return NotFoundResponse(res);
+
+      return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
     }
-
-    if (existingUser) return ForbiddenResponse(res, 'User already exists');
-    const data = await this.userService.create(req.body);
-
-    if (!data) return InternalErrorResponse(res);
-
-    const token = await signJwt({ id: data.id }, JWT_SECRET, '1h');
-
-    const sendMail = await this.mailController.sendWelcomeMail(
-      req.body.email,
-      req.body.firstName,
-      req.body.lastName,
-      token,
-    );
-
-    if (!sendMail)
-      return SuccessResponse(res, data, 'User registered successfully. Welcome mail failed');
-
-    return SuccessResponse(res, data);
   }
 
-  @httpPost('/login', validateBodyDto(LoginDTO))
-  async login(req: Request, res: Response) {
-    const { email, password } = req.body;
-
-    // Find the user by email
-    const user = await this.userService.findOneReturnPassword({ email });
-
-    if (!user) return NotFoundResponse(res, 'User not found');
-
+  //   @httpGet('/:pagination')
+  async getAll(@request() req: Request, @response() res: Response) {
     try {
-      // Compare the provided password with the stored hashed password
-      const passwordMatch = await bcrypt.compare(password, user.password);
-      if (!passwordMatch) return ForbiddenResponse(res, 'Invalid password');
-    } catch (error) {
-      logger.error('Login failed', error);
-      return InternalErrorResponse(res);
+      let pagination = parseInt(req.params.pagination);
+
+      if (!pagination) pagination = 1;
+
+      pagination = (pagination - 1) * 10;
+
+      const data = await this.userService.getAll(pagination);
+
+      if (!data) return InternalErrorResponse(res);
+      if (data.length === 0) return NotFoundResponse(res);
+
+      return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
     }
-
-    // Passwords match, user is authenticated
-    const { id, role } = user;
-
-    const magicLinkToken = await signJwt({ id, role, email }, JWT_SECRET, '3m');
-
-    this.mailController.sendMagicLinkEmail(user.email, magicLinkToken);
-
-    return SuccessMsgResponse(
-      res,
-      'We sent you a verification link to your email address. Click the link to sign-in on this device. Expires in 3 minutes',
-    );
   }
 
-  async authorizeUserFromMagicLink(req: Request, res: Response) {
-    const { token } = req.params;
-    if (!token) return BadRequestResponse(res, 'Unauthorized! Invalid token');
+  //   @httpGet('/exists')
+  async exists(@request() req: Request, @response() res: Response) {
+    try {
+      const data = await this.userService.exists(req.query);
 
-    const decoded = await verifyJwt(token, JWT_SECRET);
-    if (!decoded) return AccessTokenErrorResponse(res, 'Unauthorized! Invalid token');
+      // If nothing exists, return 0 as the count
+      if (!data) return SuccessResponse(res, []);
 
-    const { id, role, email } = decoded;
-
-    const accessToken = await signJwt({ id, role, email }, ACCESS_TOKEN_SECRET, '48h');
-
-    res.cookie('token', accessToken, { httpOnly: true });
-
-    return SuccessMsgResponse(res, MESSAGES.LOGGED_IN);
+      return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
   }
 
-  // async resetPasswordMail(req: Request, res: Response) {
-  //   const { email } = req.body;
+  //   @httpGet('/count')
+  async getCount(@request() req: Request, @response() res: Response) {
+    try {
+      const data = await this.userService.getCount(req.query);
 
-  //   // Find the user by email
-  //   const user = await this.userService.findOne({ email });
+      // If nothing exists, return 0 as the count
+      if (!data) return SuccessResponse(res, { data: 0 });
 
-  //   if (!user) return NotFoundResponse(res, 'User not found');
-
-  //   // Generate a unique reset token
-  //   const token = crypto.randomBytes(32).toString('hex');
-
-  //   // Set the expiration date to 1 hour from now
-  //   const expiresAt = new Date();
-  //   expiresAt.setHours(expiresAt.getHours() + 1);
-
-  //   // Save the reset token to the database
-  //   const resetToken = await resetTokenService.create({ user: user.id, token, expiresAt });
-
-  //   // Send the password reset email
-  //   let mailSent = await mailController.sendPasswordResetEmail(email, token);
-
-  //   if (!mailSent) return InternalErrorResponse(res, 'Error sending password reset email');
-
-  //   return SuccessMsgResponse(res, 'Password reset email sent successfully');
-  // }
-
-  // async resetPassword(req: Request, res: Response) {
-  //   const { token } = req.params;
-  //   const { newPassword } = req.body;
-
-  //   // Find the reset token in the database
-  //   const resetToken = await resetTokenService.findOne({ token });
-
-  //   if (!resetToken || resetToken.expiresAt < new Date())
-  //     return ForbiddenResponse(res, 'Invalid or expired token');
-
-  //   // Find the associated user and update their password
-  //   const user = await this.userService.findOne({ user: resetToken.user });
-
-  //   if (!user) return res.status(404).json({ message: 'User not found' });
-
-  //   let hashedPassword = await hashPassword(newPassword);
-  //   let updatedUser = await this.userService.update({ id: user.id }, { password: hashedPassword });
-
-  //   if (!updatedUser) return InternalErrorResponse(res, 'Unable to update password');
-
-  //   // Delete the used reset token
-  //   let usedToken = await resetTokenService.softDelete({ id: resetToken.id });
-
-  //   if (!usedToken) return InternalErrorResponse(res, 'Unable to delete token');
-
-  //   return SuccessMsgResponse(res, 'Password reset successful');
-  // }
-
-  async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const data = await this.userService.update({ id: id }, req.body);
-
-    if (!data) return NotFoundResponse(res);
-
-    return SuccessResponse(res, data, MESSAGES.UPDATED);
+      return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
   }
 
-  @httpDelete('/logout')
-  async logout(req: Request, res: Response) {
-    const token = req.cookies.token;
+  //   @httpGet('/')
+  async find(@request() req: Request, @response() res: Response) {
+    try {
+      const data = await this.userService.find(req.query);
 
-    if (!token) return NotFoundResponse(res, 'No user logged in currently');
+      if (!data) return InternalErrorResponse(res);
+      if (data.length === 0) return NotFoundResponse(res);
 
-    res.clearCookie('token');
+      return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
 
-    return SuccessMsgResponse(res, 'Logged out successfully');
+  //   @httpPost('/:id')
+  async update(@request() req: Request, @response() res: Response) {
+    try {
+      const { id } = req.params;
+      const data = await this.userService.update({ id: id }, req.body);
+
+      if (!data) return NotFoundResponse(res);
+
+      return SuccessResponse(res, data, MESSAGES.UPDATED);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
+
+  //   @httpDelete('/:id')
+  async delete(@request() req: Request, @response() res: Response) {
+    try {
+      const { id } = req.params;
+      const data = await this.userService.softDelete({ id: id });
+
+      if (!data) return NotFoundResponse(res);
+
+      return SuccessResponse(res, data, MESSAGES.DELETED);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
+
+  // Admins only
+  //   @httpDelete('/hard/:id')
+  async hardDelete(@request() req: Request, @response() res: Response) {
+    try {
+      const { id } = req.params;
+      const data = await this.userService.hardDelete({ id: id });
+
+      if (!data) return NotFoundResponse(res);
+
+      return SuccessResponse(res, data, MESSAGES.DELETED);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
   }
 }

@@ -5,7 +5,7 @@ import logger from './helpers/logger';
 import sequelize from './config/sequelize';
 import { InversifyExpressServer } from 'inversify-express-utils';
 import container from './inversify.config';
-import handleRouteNotFound from './middleware/url_not_found.middleware';
+// import handleRouteNotFound from './middleware/url_not_found.middleware';
 // import { testConnection } from './config/sequelize';
 
 // setting up server

@@ -26,13 +26,9 @@ export class MailController {
 
     if (!compiledTemplate) return false;
     // Send the email
-    const info = await this.mailService.sendMail(
-      email,
-      compiledTemplate,
-      `${APP_NAME} #100DaysOfAPIAwesomeness Welcome`,
-    );
+    const info = await this.mailService.sendMail(email, compiledTemplate, `${APP_NAME} Welcome`);
 
-    console.log(`#100DaysOfAPIAwesomeness Welcome email sent to: ${email}`);
+    console.log(`Welcome email sent to: ${email}`);
 
     return { info };
   }
@@ -73,7 +69,7 @@ export class MailController {
     // Load the email template
     const templatePath = 'src/templates/magic_link.html';
 
-    const magicLink = `${SITE_LINK}api/v1/auth/magic/${token}`;
+    const magicLink = `${SITE_LINK}/api/v1/auth/magic/${token}`;
 
     // Replace placeholders with actual data
     const data = {
@@ -84,13 +80,9 @@ export class MailController {
 
     if (!compiledTemplate) return false;
     // Send the email
-    const info = await this.mailService.sendMail(
-      email,
-      compiledTemplate,
-      `${APP_NAME} #100DaysOfAPIAwesomeness`,
-    );
+    const info = await this.mailService.sendMail(email, compiledTemplate, `${APP_NAME}`);
 
-    console.log(`#100DaysOfAPIAwesomeness Magic link email sent to: ${email}`);
+    console.log(`Magic link email sent to: ${email}`);
 
     return { info };
   }
