@@ -5,13 +5,16 @@ import logger from './helpers/logger';
 import sequelize from './config/sequelize';
 import { InversifyExpressServer } from 'inversify-express-utils';
 import container from './inversify.config';
+import handleRouteNotFound from './middleware/url_not_found.middleware';
 // import { testConnection } from './config/sequelize';
 
 // setting up server
 const PORT = process.env.PORT || 3000;
 
 // Set up the Inversify server
-const server = new InversifyExpressServer(container, null, { rootPath: '/api' }, app);
+const server = new InversifyExpressServer(container, null, { rootPath: '/api/v' }, app);
+
+app.use(handleRouteNotFound);
 
 server.build().listen(PORT, async () => {
   // await testConnection();

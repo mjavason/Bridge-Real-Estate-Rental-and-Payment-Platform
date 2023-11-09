@@ -62,7 +62,7 @@ export const MESSAGES = {
   FAILURE_MSG_RESPONSE: 'Oops! The operation failed to complete',
   ACCESS_TOKEN_ERROR_RESPONSE: 'Access token is invalid. Please log in again',
   TOKEN_REFRESH_RESPONSE: 'Success! The access token was refreshed successfully',
-  ROUTE_NOT_FOUND: "Sorry, the page you're looking for doesn't exist.",
+  ROUTE_NOT_FOUND: "Sorry, the page/route you're looking for doesn't exist.",
   WELCOME_V1: 'Welcome to Version 1',
 };
 
