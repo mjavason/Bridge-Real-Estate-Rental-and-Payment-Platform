@@ -48,7 +48,4 @@ User.init(
   },
 );
 
-// Define the association between User and House
-User.hasMany(House);
-
 export default User;

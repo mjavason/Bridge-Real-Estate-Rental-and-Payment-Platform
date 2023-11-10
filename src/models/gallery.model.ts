@@ -7,13 +7,13 @@ class Gallery extends Model<IGallery> {}
 
 Gallery.init(
   {
-    houseId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: House,
-        key: 'id',
-      },
-    },
+    // houseId: {
+    //   type: DataTypes.INTEGER,
+    //   references: {
+    //     model: House,
+    //     key: 'id',
+    //   },
+    // },
     type: {
       type: DataTypes.STRING, // 'image' or 'video'
       allowNull: false,
@@ -31,12 +31,13 @@ Gallery.init(
     sequelize,
     defaultScope: {
       attributes: { exclude: ['deleted'] },
-      include: House,
+      include: [House],
     },
     timestamps: true,
   },
 );
 
+House.hasMany(Gallery);
 Gallery.belongsTo(House);
 
 export default Gallery;

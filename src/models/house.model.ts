@@ -32,22 +32,15 @@ House.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    // pictures: {
-    //   type: DataTypes.ARRAY(DataTypes.STRING),
-    //   defaultValue: [],
-    // },
-    // videos: {
-    //   type: DataTypes.ARRAY(DataTypes.STRING),
-    //   defaultValue: [],
-    // },
     // Foreign key referencing User model
-    userId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
+    // userId: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    //   references: {
+    //     model: User,
+    //     key: 'id',
+    //   },
+    // },
     deleted: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -57,14 +50,14 @@ House.init(
     sequelize,
     defaultScope: {
       attributes: { exclude: ['deleted'] },
-      include: User,
+      include: [User],
     },
     timestamps: true,
   },
 );
 
-// Define the association between User and House
+// Define the association between User and House and Gallery
+User.hasMany(House);
 House.belongsTo(User);
-House.hasMany(Gallery);
 
 export default House;

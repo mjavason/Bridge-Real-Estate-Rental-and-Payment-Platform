@@ -15,13 +15,13 @@ import {
   response,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { GalleryService } from '../services';
+import { BidService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
 
-@controller('/gallery', isAuth)
-export class GalleryController {
-  constructor(@inject(GalleryService) private galleryService: GalleryService) {}
+@controller('/bid', isAuth)
+export class BidController {
+  constructor(@inject(BidService) private bidService: BidService) {}
 
   @httpGet('/')
   async default(@request() req: Request, @response() res: Response) {
@@ -31,7 +31,7 @@ export class GalleryController {
   //   @httpPost('/')
   async create(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.galleryService.create(req.body);
+      const data = await this.bidService.create(req.body);
 
       if (!data) return InternalErrorResponse(res);
 
@@ -50,7 +50,7 @@ export class GalleryController {
 
       pagination = (pagination - 1) * 10;
 
-      const data = await this.galleryService.getAll(pagination);
+      const data = await this.bidService.getAll(pagination);
 
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
@@ -64,7 +64,7 @@ export class GalleryController {
   //   @httpGet('/exists')
   async exists(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.galleryService.exists(req.query);
+      const data = await this.bidService.exists(req.query);
 
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, []);
@@ -78,7 +78,7 @@ export class GalleryController {
   //   @httpGet('/count')
   async getCount(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.galleryService.count(req.query);
+      const data = await this.bidService.count(req.query);
 
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, { data: 0 });
@@ -92,7 +92,7 @@ export class GalleryController {
   //   @httpGet('/')
   async find(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.galleryService.find(req.query);
+      const data = await this.bidService.find(req.query);
 
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
@@ -107,7 +107,7 @@ export class GalleryController {
   async update(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.galleryService.update({ id: id }, req.body);
+      const data = await this.bidService.update({ id: id }, req.body);
 
       if (!data) return NotFoundResponse(res);
 
@@ -121,7 +121,7 @@ export class GalleryController {
   async delete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.galleryService.softDelete({ id: id });
+      const data = await this.bidService.softDelete({ id: id });
 
       if (!data) return NotFoundResponse(res);
 
@@ -136,7 +136,7 @@ export class GalleryController {
   async hardDelete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.galleryService.hardDelete({ id: id });
+      const data = await this.bidService.hardDelete({ id: id });
 
       if (!data) return NotFoundResponse(res);
 

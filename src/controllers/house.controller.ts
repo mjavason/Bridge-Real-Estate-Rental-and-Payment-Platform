@@ -10,7 +10,7 @@ import {
   response,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { HouseService } from '../services/house.service';
+import { HouseService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
 

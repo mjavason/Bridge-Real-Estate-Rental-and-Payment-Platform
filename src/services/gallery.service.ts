@@ -1,6 +1,5 @@
 import GalleryModel from '../models/gallery.model';
 import IGallery from '../interfaces/gallery.interface';
-import bcrypt from 'bcrypt';
 import { injectable } from 'inversify';
 
 /**

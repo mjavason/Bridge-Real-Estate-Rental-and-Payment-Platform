@@ -15,7 +15,7 @@ import { ACCESS_TOKEN_SECRET, JWT_SECRET, MESSAGES } from '../constants';
 import { MailController } from './mail.controller';
 import { controller, httpDelete, httpGet, httpPost } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { UserService } from '../services/user.service';
+import { UserService } from '../services';
 import { LoginDTO, RegisterUserDTO } from '../dto/auth.dto';
 import { validateBodyDto } from '../middleware/body.validation.middleware';
 

@@ -1,6 +1,5 @@
 import HouseModel from '../models/house.model';
 import IHouse from '../interfaces/house.interface';
-import bcrypt from 'bcrypt';
 import { injectable } from 'inversify';
 
 /**

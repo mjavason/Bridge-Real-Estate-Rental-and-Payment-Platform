@@ -1,7 +1,7 @@
 import { Container } from 'inversify';
-import { AuthController, MailController } from './controllers';
+import { AuthController, GalleryController, HouseController, MailController, BidController } from './controllers';
 import { interfaces } from 'inversify-express-utils';
-import { MailService, UserService } from './services';
+import { BidService, MailService, UserService, HouseService, GalleryService } from './services';
 
 const container = new Container();
 
@@ -9,8 +9,14 @@ const container = new Container();
 container.bind<UserService>(UserService).toSelf();
 container.bind<MailService>(MailService).toSelf();
 container.bind<MailController>(MailController).toSelf();
+container.bind<HouseService>(HouseService).toSelf();
+container.bind<GalleryService>(GalleryService).toSelf();
+container.bind<BidService>(BidService).toSelf();
 
 // Bind Controllers
 container.bind<interfaces.Controller>(AuthController).to(AuthController);
+container.bind<interfaces.Controller>(HouseController).to(HouseController);
+container.bind<interfaces.Controller>(GalleryController).to(GalleryController);
+container.bind<interfaces.Controller>(BidController).to(BidController);
 
 export default container;

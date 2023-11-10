@@ -14,6 +14,7 @@ const sequelize = new Sequelize({
   password: POSTGRES_DB_PASSWORD,
   host: POSTGRES_DB_HOST, // Database host
   port: 5432, // Database port
+  logging: false,
 });
 
 // Test the connection
