@@ -111,10 +111,33 @@
  *         description: Bad request.
  */
 
+
+/**
+ * @swagger
+ * /gallery/search:
+ *   get:
+ *     summary: Search for galleries
+ *     description: Search for galleries based on query parameters.
+ *     tags: [Gallery]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: parameters
+ *         description: Query parameters for searching galleries.
+ *         schema:
+ *           $ref: '#/components/schemas/FindGalleryDTO'
+ *     responses:
+ *       '200':
+ *         description: Galleries retrieved successfully.
+ *       '400':
+ *         description: Bad request.
+ */
+
 /**
  * @swagger
  * /gallery/{id}:
- *   post:
+ *   patch:
  *     summary: Update a gallery entry
  *     description: Update a gallery entry with the provided data.
  *     tags: [Gallery]

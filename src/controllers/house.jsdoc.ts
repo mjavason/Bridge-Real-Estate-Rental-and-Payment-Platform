@@ -115,6 +115,29 @@
  *         description: Bad request.
  */
 
+
+/**
+ * @swagger
+ * /house/search:
+ *   get:
+ *     summary: Search for houses
+ *     description: Search for houses based on query parameters.
+ *     tags: [House]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: parameters
+ *         description: Query parameters for searching houses.
+ *         schema:
+ *           $ref: '#/components/schemas/FindHouseDTO'
+ *     responses:
+ *       '200':
+ *         description: Houses retrieved successfully.
+ *       '400':
+ *         description: Bad request.
+ */
+
 /**
  * @swagger
  * /house/{id}:
@@ -147,7 +170,7 @@
 /**
  * @swagger
  * /house/{id}:
- *   post:
+ *   patch:
  *     summary: Update a house
  *     description: Update a house with the provided data.
  *     tags: [House]

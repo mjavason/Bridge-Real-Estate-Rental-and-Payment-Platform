@@ -5,6 +5,7 @@ import {
   controller,
   httpDelete,
   httpGet,
+  httpPatch,
   httpPost,
   request,
   response,
@@ -16,12 +17,15 @@ import isAuth from '../middleware/is_auth.middleware';
 import isAdmin from '../middleware/is_admin.middleware';
 import { UniqueIdDTO } from '../dto/unique_id.dto';
 import { validateParamsDTO } from '../middleware/params.validation.middleware';
+import { validateBodyDTO } from '../middleware/body.validation.middleware';
+import { CreateBidDTO, FindBidDTO, UpdateBidDTO } from '../dto/bid.dto';
+import { validateQueryDTO } from '../middleware/query.validation.middleware';
 
 @controller('/bid', isAuth)
 export class BidController {
   constructor(@inject(BidService) private bidService: BidService) {}
 
-  @httpPost('/')
+  @httpPost('/', validateBodyDTO(CreateBidDTO))
   async create(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.bidService.create(req.body);
@@ -34,7 +38,7 @@ export class BidController {
     }
   }
 
-  @httpGet('/exists')
+  @httpGet('/exists', validateQueryDTO(FindBidDTO))
   async exists(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.bidService.exists(req.query);
@@ -48,7 +52,7 @@ export class BidController {
     }
   }
 
-  @httpGet('/count')
+  @httpGet('/count', validateQueryDTO(FindBidDTO))
   async getCount(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.bidService.count(req.query);
@@ -62,7 +66,7 @@ export class BidController {
     }
   }
 
-  @httpGet('/')
+  @httpGet('/search', validateQueryDTO(FindBidDTO))
   async find(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.bidService.find(req.query);
@@ -96,7 +100,7 @@ export class BidController {
     }
   }
 
-  @httpPost('/:id', validateParamsDTO(UniqueIdDTO))
+  @httpPatch('/:id', validateParamsDTO(UniqueIdDTO), validateBodyDTO(UpdateBidDTO))
   async update(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;

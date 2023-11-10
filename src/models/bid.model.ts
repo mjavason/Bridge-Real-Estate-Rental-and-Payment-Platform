@@ -24,11 +24,11 @@ Bid.init(
   {
     sequelize,
     defaultScope: {
-      attributes: { exclude: ['deleted'] },
+      attributes: { exclude: ['deleted', 'HouseId', 'UserId'] },
       include: [House, User],
     },
     timestamps: true,
-  }
+  },
 );
 
 House.hasMany(Bid);

@@ -90,6 +90,28 @@
 
 /**
  * @swagger
+ * /bid/search:
+ *   get:
+ *     summary: Search for bids
+ *     description: Search for bids based on query parameters.
+ *     tags: [Bid]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: parameters
+ *         description: Query parameters for searching bids.
+ *         schema:
+ *           $ref: '#/components/schemas/FindBidDTO'
+ *     responses:
+ *       '200':
+ *         description: Bids retrieved successfully.
+ *       '400':
+ *         description: Bad request.
+ */
+
+/**
+ * @swagger
  * /bid/{pagination}:
  *   get:
  *     summary: Get all bids with pagination
@@ -114,7 +136,7 @@
 /**
  * @swagger
  * /bid/{id}:
- *   post:
+ *   patch:
  *     summary: Update a bid
  *     description: Update a bid with the provided data.
  *     tags: [Bid]

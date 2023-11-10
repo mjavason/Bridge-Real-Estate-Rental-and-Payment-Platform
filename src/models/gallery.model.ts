@@ -30,7 +30,7 @@ Gallery.init(
   {
     sequelize,
     defaultScope: {
-      attributes: { exclude: ['deleted'] },
+      attributes: { exclude: ['deleted', 'HouseId'] },
       include: [House],
     },
     timestamps: true,
