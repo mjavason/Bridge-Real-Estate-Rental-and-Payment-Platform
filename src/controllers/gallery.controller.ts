@@ -1,16 +1,11 @@
 import { Request, Response } from 'express';
-import {
-  SuccessResponse,
-  InternalErrorResponse,
-  NotFoundResponse,
-  SuccessMsgResponse,
-} from '../helpers/response';
+import { SuccessResponse, InternalErrorResponse, NotFoundResponse } from '../helpers/response';
 import { MESSAGES } from '../constants';
 import {
   controller,
-  //   httpDelete,
+  httpDelete,
   httpGet,
-  //   httpPost,
+  httpPost,
   request,
   response,
 } from 'inversify-express-utils';
@@ -18,12 +13,15 @@ import { inject } from 'inversify';
 import { GalleryService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
+import isAdmin from '../middleware/is_admin.middleware';
+import { UniqueIdDTO } from '../dto/unique_id.dto';
+import { validateParamsDTO } from '../middleware/params.validation.middleware';
 
 @controller('/gallery', isAuth)
 export class GalleryController {
   constructor(@inject(GalleryService) private galleryService: GalleryService) {}
 
-  //   @httpPost('/')
+  @httpPost('/')
   async create(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.galleryService.create(req.body);
@@ -36,7 +34,7 @@ export class GalleryController {
     }
   }
 
-  //   @httpGet('/exists')
+  @httpGet('/exists')
   async exists(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.galleryService.exists(req.query);
@@ -50,7 +48,7 @@ export class GalleryController {
     }
   }
 
-  //   @httpGet('/count')
+  @httpGet('/count')
   async getCount(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.galleryService.count(req.query);
@@ -64,7 +62,7 @@ export class GalleryController {
     }
   }
 
-  //   @httpGet('/')
+  @httpGet('/')
   async find(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.galleryService.find(req.query);
@@ -78,7 +76,7 @@ export class GalleryController {
     }
   }
 
-  //   @httpGet('/:pagination')
+  @httpGet('/:pagination')
   async getAll(@request() req: Request, @response() res: Response) {
     try {
       let pagination = parseInt(req.params.pagination);
@@ -98,7 +96,7 @@ export class GalleryController {
     }
   }
 
-  //   @httpPost('/:id')
+  @httpPost('/:id', validateParamsDTO(UniqueIdDTO))
   async update(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
@@ -113,7 +111,7 @@ export class GalleryController {
   }
 
   // Admins only
-  //   @httpDelete('/hard/:id')
+  @httpDelete('/hard/:id', validateParamsDTO(UniqueIdDTO), isAdmin)
   async hardDelete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
@@ -127,7 +125,7 @@ export class GalleryController {
     }
   }
 
-  //   @httpDelete('/:id')
+  @httpDelete('/:id', validateParamsDTO(UniqueIdDTO))
   async delete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;

@@ -13,6 +13,9 @@ import { inject } from 'inversify';
 import { HouseService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
+import isAdmin from '../middleware/is_admin.middleware';
+import { UniqueIdDTO } from '../dto/unique_id.dto';
+import { validateParamsDTO } from '../middleware/params.validation.middleware';
 
 @controller('/house', isAuth)
 export class HouseController {
@@ -95,7 +98,7 @@ export class HouseController {
     }
   }
 
-  @httpPost('/:id')
+  @httpPost('/:id', validateParamsDTO(UniqueIdDTO))
   async update(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
@@ -110,7 +113,7 @@ export class HouseController {
   }
 
   // Admins only
-  @httpDelete('/hard/:id')
+  @httpDelete('/hard/:id', validateParamsDTO(UniqueIdDTO), isAdmin)
   async hardDelete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
@@ -124,7 +127,7 @@ export class HouseController {
     }
   }
 
-  @httpDelete('/:id')
+  @httpDelete('/:id', validateParamsDTO(UniqueIdDTO))
   async delete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;

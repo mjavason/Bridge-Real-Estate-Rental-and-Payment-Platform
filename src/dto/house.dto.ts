@@ -24,10 +24,6 @@ export class CreateHouseDTO {
   @IsNotEmpty()
   @IsString()
   amenities!: string;
-
-  //   // Assuming UserId is part of the request body, you might need to adjust this based on your actual request structure
-  //   @IsNumber()
-  //   UserId!: number;
 }
 
 export class UpdateHouseDTO {

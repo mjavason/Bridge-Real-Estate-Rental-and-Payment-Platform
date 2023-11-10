@@ -6,24 +6,33 @@ import {
   IsNumber,
   IsBoolean,
   IsOptional,
+  IsNotEmpty,
 } from 'class-validator';
 
+export const userRoles = ['tenant', 'admin', 'landlord'];
+
 export class CreateUserDTO {
+  @IsNotEmpty()
   @IsString()
   firstName!: string;
 
+  @IsNotEmpty()
   @IsString()
   lastName!: string;
 
+  @IsNotEmpty()
   @IsEmail()
   email!: string;
 
-  @IsEnum(['client', 'admin', 'landlord'])
+  @IsNotEmpty()
+  @IsEnum(userRoles)
   role!: string;
 
+  @IsNotEmpty()
   @IsNumber()
   accountBalance!: number;
 
+  @IsNotEmpty()
   @IsString()
   @MinLength(5)
   password!: string;
@@ -43,7 +52,7 @@ export class UpdateUserDTO {
   email?: string;
 
   @IsOptional()
-  @IsEnum(['admin', 'client', 'landlord'])
+  @IsEnum(userRoles)
   role?: string;
 
   @IsOptional()
@@ -78,7 +87,7 @@ export class FindUserDTO {
   email?: string;
 
   @IsOptional()
-  @IsEnum(['client', 'admin', 'landlord'])
+  @IsEnum(userRoles)
   role?: string;
 
   @IsOptional()

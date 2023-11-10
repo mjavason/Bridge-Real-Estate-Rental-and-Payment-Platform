@@ -1,9 +1,9 @@
-/* Reset some default styles for email clients */
+/* Reset some default styles for email tenants */
 body,
 p {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif; /* Use a common font for better email client compatibility */
+  font-family: Arial, sans-serif; /* Use a common font for better email tenant compatibility */
 }
 
 /* Define styles for the email container */

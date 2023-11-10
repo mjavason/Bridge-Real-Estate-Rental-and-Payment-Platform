@@ -1,16 +1,11 @@
 import { Request, Response } from 'express';
-import {
-  SuccessResponse,
-  InternalErrorResponse,
-  NotFoundResponse,
-  SuccessMsgResponse,
-} from '../helpers/response';
+import { SuccessResponse, InternalErrorResponse, NotFoundResponse } from '../helpers/response';
 import { MESSAGES } from '../constants';
 import {
   controller,
-  //   httpDelete,
+  httpDelete,
   httpGet,
-  //   httpPost,
+  httpPost,
   request,
   response,
 } from 'inversify-express-utils';
@@ -18,17 +13,15 @@ import { inject } from 'inversify';
 import { BidService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
+import isAdmin from '../middleware/is_admin.middleware';
+import { UniqueIdDTO } from '../dto/unique_id.dto';
+import { validateParamsDTO } from '../middleware/params.validation.middleware';
 
 @controller('/bid', isAuth)
 export class BidController {
   constructor(@inject(BidService) private bidService: BidService) {}
 
-  @httpGet('/')
-  async default(@request() req: Request, @response() res: Response) {
-    return SuccessMsgResponse(res, 'Successful!');
-  }
-
-  //   @httpPost('/')
+  @httpPost('/')
   async create(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.bidService.create(req.body);
@@ -41,9 +34,7 @@ export class BidController {
     }
   }
 
-
-
-  //   @httpGet('/exists')
+  @httpGet('/exists')
   async exists(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.bidService.exists(req.query);
@@ -57,7 +48,7 @@ export class BidController {
     }
   }
 
-  //   @httpGet('/count')
+  @httpGet('/count')
   async getCount(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.bidService.count(req.query);
@@ -71,7 +62,7 @@ export class BidController {
     }
   }
 
-  //   @httpGet('/')
+  @httpGet('/')
   async find(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.bidService.find(req.query);
@@ -85,7 +76,7 @@ export class BidController {
     }
   }
 
-  //   @httpGet('/:pagination')
+  @httpGet('/:pagination')
   async getAll(@request() req: Request, @response() res: Response) {
     try {
       let pagination = parseInt(req.params.pagination);
@@ -105,7 +96,7 @@ export class BidController {
     }
   }
 
-  //   @httpPost('/:id')
+  @httpPost('/:id', validateParamsDTO(UniqueIdDTO))
   async update(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
@@ -119,10 +110,8 @@ export class BidController {
     }
   }
 
-
-
   // Admins only
-  //   @httpDelete('/hard/:id')
+  @httpDelete('/hard/:id', validateParamsDTO(UniqueIdDTO), isAdmin)
   async hardDelete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
@@ -136,17 +125,17 @@ export class BidController {
     }
   }
 
-    //   @httpDelete('/:id')
-    async delete(@request() req: Request, @response() res: Response) {
-      try {
-        const { id } = req.params;
-        const data = await this.bidService.softDelete({ id: id });
-  
-        if (!data) return NotFoundResponse(res);
-  
-        return SuccessResponse(res, data, MESSAGES.DELETED);
-      } catch (error: any) {
-        return InternalErrorResponse(res, error.message);
-      }
+  @httpDelete('/:id', validateParamsDTO(UniqueIdDTO))
+  async delete(@request() req: Request, @response() res: Response) {
+    try {
+      const { id } = req.params;
+      const data = await this.bidService.softDelete({ id: id });
+
+      if (!data) return NotFoundResponse(res);
+
+      return SuccessResponse(res, data, MESSAGES.DELETED);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
     }
+  }
 }

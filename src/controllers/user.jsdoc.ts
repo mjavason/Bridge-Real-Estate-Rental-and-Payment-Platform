@@ -108,7 +108,7 @@
  *         description: The role of the user.
  *         schema:
  *           type: string
- *           enum: ['client', 'admin', 'landlord']
+ *           enum: ['tenant', 'admin', 'landlord']
  *       - in: query
  *         name: accountBalance
  *         description: The account balance of the user.
@@ -161,7 +161,7 @@
  *         description: The role of the user.
  *         schema:
  *           type: string
- *           enum: ['client', 'admin', 'landlord']
+ *           enum: ['tenant', 'admin', 'landlord']
  *       - in: query
  *         name: accountBalance
  *         description: The account balance of the user.
@@ -214,7 +214,7 @@
  *         description: The role of the user.
  *         schema:
  *           type: string
- *           enum: ['client', 'admin', 'landlord']
+ *           enum: ['tenant', 'admin', 'landlord']
  *       - in: query
  *         name: accountBalance
  *         description: The account balance of the user.
@@ -329,7 +329,7 @@
  *           maxLength: 255
  *         role:
  *           type: string
- *           enum: [client, admin, landlord]
+ *           enum: [tenant, admin, landlord]
  *         accountBalance:
  *           type: number
  *         password:
@@ -357,7 +357,7 @@
  *           maxLength: 255
  *         role:
  *           type: string
- *           enum: [ admin, client, landlord]
+ *           enum: [ admin, tenant, landlord]
  *         accountBalance:
  *           type: number
  *         deleted:
@@ -382,7 +382,7 @@
  *           maxLength: 255
  *         role:
  *           type: string
- *           enum: [client, admin, landlord]
+ *           enum: [tenant, admin, landlord]
  *         accountBalance:
  *           type: number
  */
