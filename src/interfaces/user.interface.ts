@@ -3,7 +3,7 @@ interface IUser {
   firstName: string;
   lastName: string;
   email: string;
-  role: string; //user or admin or client or tenant
+  role: string; //user or admin or landlord
   accountBalance: number;
   password: string;
   deleted?: boolean;

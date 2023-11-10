@@ -5,7 +5,7 @@ import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { BadRequestResponseWithError } from '../helpers/response';
 
-export function validateBodyDto(dtoClass: any) {
+export function validateParamsDTO(dtoClass: any) {
   return (req: Request, res: Response, next: NextFunction) => {
     const dto: any = plainToInstance(dtoClass, req.params);
 

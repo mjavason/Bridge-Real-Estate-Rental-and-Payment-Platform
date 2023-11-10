@@ -17,7 +17,7 @@ import { controller, httpDelete, httpGet, httpPost } from 'inversify-express-uti
 import { inject } from 'inversify';
 import { UserService } from '../services';
 import { LoginDTO, RegisterUserDTO } from '../dto/auth.dto';
-import { validateBodyDto } from '../middleware/body.validation.middleware';
+import { validateBodyDTO } from '../middleware/body.validation.middleware';
 
 @controller('/auth')
 export class AuthController {
@@ -26,7 +26,7 @@ export class AuthController {
     @inject(MailController) private mailController: MailController,
   ) {}
 
-  @httpPost('/register', validateBodyDto(RegisterUserDTO))
+  @httpPost('/register', validateBodyDTO(RegisterUserDTO))
   async register(req: Request, res: Response) {
     const existingUser = await this.userService.findOne({ email: req.body.email });
 
@@ -60,7 +60,7 @@ export class AuthController {
     return SuccessResponse(res, data);
   }
 
-  @httpPost('/login', validateBodyDto(LoginDTO))
+  @httpPost('/login', validateBodyDTO(LoginDTO))
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
 

@@ -11,7 +11,7 @@ export class RegisterUserDTO {
   @IsEmail()
   email!: string;
 
-  @IsEnum(['client', 'landlord', 'admin'])
+  @IsEnum(['client', 'landlord', 'user', 'admin'])
   role!: string;
 
   @IsString()
