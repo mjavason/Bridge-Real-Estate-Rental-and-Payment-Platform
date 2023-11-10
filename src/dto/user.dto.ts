@@ -30,8 +30,6 @@ export class CreateUserDTO {
 }
 
 export class UpdateUserDTO {
-  @IsNumber()
-  id!: number;
 
   @IsOptional()
   @IsString()
@@ -53,10 +51,10 @@ export class UpdateUserDTO {
   @IsNumber()
   accountBalance?: number;
 
-  @IsOptional()
-  @IsString()
-  @MinLength(5)
-  password?: string;
+  // @IsOptional()
+  // @IsString()
+  // @MinLength(5)
+  // password?: string;
 
   @IsOptional()
   @IsBoolean()
@@ -87,8 +85,4 @@ export class FindUserDTO {
   @IsOptional()
   @IsString()
   accountBalance?: number;
-
-  @IsOptional()
-  @IsString()
-  password?: string;
 }

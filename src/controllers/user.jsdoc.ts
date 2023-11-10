@@ -339,8 +339,6 @@
  *     UpdateUserDTO:
  *       type: object
  *       properties:
- *         id:
- *           type: number
  *         firstName:
  *           type: string
  *           minLength: 1
@@ -358,9 +356,6 @@
  *           enum: [ admin, client, landlord]
  *         accountBalance:
  *           type: number
- *         password:
- *           type: string
- *           minLength: 5
  *         deleted:
  *           type: boolean
  *
