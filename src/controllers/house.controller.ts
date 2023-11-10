@@ -3,9 +3,9 @@ import { SuccessResponse, InternalErrorResponse, NotFoundResponse } from '../hel
 import { MESSAGES } from '../constants';
 import {
   controller,
-  //   httpDelete,
+  httpDelete,
   httpGet,
-  //   httpPost,
+  httpPost,
   request,
   response,
 } from 'inversify-express-utils';
@@ -18,9 +18,11 @@ import isAuth from '../middleware/is_auth.middleware';
 export class HouseController {
   constructor(@inject(HouseService) private houseService: HouseService) {}
 
-  //   @httpPost('/')
+  @httpPost('/')
   async create(@request() req: Request, @response() res: Response) {
     try {
+      req.body.UserId = res.locals.user.id;
+
       const data = await this.houseService.create(req.body);
 
       if (!data) return InternalErrorResponse(res);
@@ -31,7 +33,49 @@ export class HouseController {
     }
   }
 
-  //   @httpGet('/:pagination')
+  @httpGet('/exists')
+  async exists(@request() req: Request, @response() res: Response) {
+    try {
+      const data = await this.houseService.exists(req.query);
+
+      // If nothing exists, return 0 as the count
+      if (!data) return SuccessResponse(res, []);
+
+      return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
+
+  @httpGet('/count')
+  async getCount(@request() req: Request, @response() res: Response) {
+    try {
+      const data = await this.houseService.count(req.query);
+
+      // If nothing exists, return 0 as the count
+      if (!data) return SuccessResponse(res, { data: 0 });
+
+      return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
+
+  @httpGet('/')
+  async find(@request() req: Request, @response() res: Response) {
+    try {
+      const data = await this.houseService.find(req.query);
+
+      if (!data) return InternalErrorResponse(res);
+      if (data.length === 0) return NotFoundResponse(res);
+
+      return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
+
+  @httpGet('/:pagination')
   async getAll(@request() req: Request, @response() res: Response) {
     try {
       let pagination = parseInt(req.params.pagination);
@@ -51,49 +95,7 @@ export class HouseController {
     }
   }
 
-  //   @httpGet('/exists')
-  async exists(@request() req: Request, @response() res: Response) {
-    try {
-      const data = await this.houseService.exists(req.query);
-
-      // If nothing exists, return 0 as the count
-      if (!data) return SuccessResponse(res, []);
-
-      return SuccessResponse(res, data);
-    } catch (error: any) {
-      return InternalErrorResponse(res, error.message);
-    }
-  }
-
-  //   @httpGet('/count')
-  async getCount(@request() req: Request, @response() res: Response) {
-    try {
-      const data = await this.houseService.count(req.query);
-
-      // If nothing exists, return 0 as the count
-      if (!data) return SuccessResponse(res, { data: 0 });
-
-      return SuccessResponse(res, data);
-    } catch (error: any) {
-      return InternalErrorResponse(res, error.message);
-    }
-  }
-
-  //   @httpGet('/')
-  async find(@request() req: Request, @response() res: Response) {
-    try {
-      const data = await this.houseService.find(req.query);
-
-      if (!data) return InternalErrorResponse(res);
-      if (data.length === 0) return NotFoundResponse(res);
-
-      return SuccessResponse(res, data);
-    } catch (error: any) {
-      return InternalErrorResponse(res, error.message);
-    }
-  }
-
-  //   @httpPost('/:id')
+  @httpPost('/:id')
   async update(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
@@ -107,11 +109,12 @@ export class HouseController {
     }
   }
 
-  //   @httpDelete('/:id')
-  async delete(@request() req: Request, @response() res: Response) {
+  // Admins only
+  @httpDelete('/hard/:id')
+  async hardDelete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.houseService.softDelete({ id: id });
+      const data = await this.houseService.hardDelete({ id: id });
 
       if (!data) return NotFoundResponse(res);
 
@@ -121,12 +124,11 @@ export class HouseController {
     }
   }
 
-  // Admins only
-  //   @httpDelete('/hard/:id')
-  async hardDelete(@request() req: Request, @response() res: Response) {
+  @httpDelete('/:id')
+  async delete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.houseService.hardDelete({ id: id });
+      const data = await this.houseService.softDelete({ id: id });
 
       if (!data) return NotFoundResponse(res);
 

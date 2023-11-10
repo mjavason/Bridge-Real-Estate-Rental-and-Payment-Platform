@@ -2,7 +2,6 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/sequelize';
 import IHouse from '../interfaces/house.interface';
 import User from './user.model';
-import Gallery from './gallery.model';
 
 class House extends Model<IHouse> {}
 
@@ -32,15 +31,6 @@ House.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    // Foreign key referencing User model
-    // userId: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    //   references: {
-    //     model: User,
-    //     key: 'id',
-    //   },
-    // },
     deleted: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -49,7 +39,7 @@ House.init(
   {
     sequelize,
     defaultScope: {
-      attributes: { exclude: ['deleted'] },
+      attributes: { exclude: ['deleted', 'UserId'] },
       include: [User],
     },
     timestamps: true,

@@ -23,37 +23,12 @@ import isAuth from '../middleware/is_auth.middleware';
 export class GalleryController {
   constructor(@inject(GalleryService) private galleryService: GalleryService) {}
 
-  @httpGet('/')
-  async default(@request() req: Request, @response() res: Response) {
-    return SuccessMsgResponse(res, 'Successful!');
-  }
-
   //   @httpPost('/')
   async create(@request() req: Request, @response() res: Response) {
     try {
       const data = await this.galleryService.create(req.body);
 
       if (!data) return InternalErrorResponse(res);
-
-      return SuccessResponse(res, data);
-    } catch (error: any) {
-      return InternalErrorResponse(res, error.message);
-    }
-  }
-
-  //   @httpGet('/:pagination')
-  async getAll(@request() req: Request, @response() res: Response) {
-    try {
-      let pagination = parseInt(req.params.pagination);
-
-      if (!pagination) pagination = 1;
-
-      pagination = (pagination - 1) * 10;
-
-      const data = await this.galleryService.getAll(pagination);
-
-      if (!data) return InternalErrorResponse(res);
-      if (data.length === 0) return NotFoundResponse(res);
 
       return SuccessResponse(res, data);
     } catch (error: any) {
@@ -103,6 +78,26 @@ export class GalleryController {
     }
   }
 
+  //   @httpGet('/:pagination')
+  async getAll(@request() req: Request, @response() res: Response) {
+    try {
+      let pagination = parseInt(req.params.pagination);
+
+      if (!pagination) pagination = 1;
+
+      pagination = (pagination - 1) * 10;
+
+      const data = await this.galleryService.getAll(pagination);
+
+      if (!data) return InternalErrorResponse(res);
+      if (data.length === 0) return NotFoundResponse(res);
+
+      return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
+
   //   @httpPost('/:id')
   async update(@request() req: Request, @response() res: Response) {
     try {
@@ -117,11 +112,12 @@ export class GalleryController {
     }
   }
 
-  //   @httpDelete('/:id')
-  async delete(@request() req: Request, @response() res: Response) {
+  // Admins only
+  //   @httpDelete('/hard/:id')
+  async hardDelete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.galleryService.softDelete({ id: id });
+      const data = await this.galleryService.hardDelete({ id: id });
 
       if (!data) return NotFoundResponse(res);
 
@@ -131,12 +127,11 @@ export class GalleryController {
     }
   }
 
-  // Admins only
-  //   @httpDelete('/hard/:id')
-  async hardDelete(@request() req: Request, @response() res: Response) {
+  //   @httpDelete('/:id')
+  async delete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.galleryService.hardDelete({ id: id });
+      const data = await this.galleryService.softDelete({ id: id });
 
       if (!data) return NotFoundResponse(res);
 

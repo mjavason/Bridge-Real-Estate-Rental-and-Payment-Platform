@@ -41,25 +41,7 @@ export class BidController {
     }
   }
 
-  //   @httpGet('/:pagination')
-  async getAll(@request() req: Request, @response() res: Response) {
-    try {
-      let pagination = parseInt(req.params.pagination);
 
-      if (!pagination) pagination = 1;
-
-      pagination = (pagination - 1) * 10;
-
-      const data = await this.bidService.getAll(pagination);
-
-      if (!data) return InternalErrorResponse(res);
-      if (data.length === 0) return NotFoundResponse(res);
-
-      return SuccessResponse(res, data);
-    } catch (error: any) {
-      return InternalErrorResponse(res, error.message);
-    }
-  }
 
   //   @httpGet('/exists')
   async exists(@request() req: Request, @response() res: Response) {
@@ -103,6 +85,26 @@ export class BidController {
     }
   }
 
+  //   @httpGet('/:pagination')
+  async getAll(@request() req: Request, @response() res: Response) {
+    try {
+      let pagination = parseInt(req.params.pagination);
+
+      if (!pagination) pagination = 1;
+
+      pagination = (pagination - 1) * 10;
+
+      const data = await this.bidService.getAll(pagination);
+
+      if (!data) return InternalErrorResponse(res);
+      if (data.length === 0) return NotFoundResponse(res);
+
+      return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
+
   //   @httpPost('/:id')
   async update(@request() req: Request, @response() res: Response) {
     try {
@@ -117,19 +119,7 @@ export class BidController {
     }
   }
 
-  //   @httpDelete('/:id')
-  async delete(@request() req: Request, @response() res: Response) {
-    try {
-      const { id } = req.params;
-      const data = await this.bidService.softDelete({ id: id });
 
-      if (!data) return NotFoundResponse(res);
-
-      return SuccessResponse(res, data, MESSAGES.DELETED);
-    } catch (error: any) {
-      return InternalErrorResponse(res, error.message);
-    }
-  }
 
   // Admins only
   //   @httpDelete('/hard/:id')
@@ -145,4 +135,18 @@ export class BidController {
       return InternalErrorResponse(res, error.message);
     }
   }
+
+    //   @httpDelete('/:id')
+    async delete(@request() req: Request, @response() res: Response) {
+      try {
+        const { id } = req.params;
+        const data = await this.bidService.softDelete({ id: id });
+  
+        if (!data) return NotFoundResponse(res);
+  
+        return SuccessResponse(res, data, MESSAGES.DELETED);
+      } catch (error: any) {
+        return InternalErrorResponse(res, error.message);
+      }
+    }
 }
