@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 // import { CORS_ORIGIN } from '../constants';
 import SWAGGER_OPTIONS from '../config/swagger';
-import limiter from './rate_limiter.middleware';
+// import limiter from './rate_limiter.middleware';
 import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -34,7 +34,7 @@ function PreMiddleware(app: express.Application) {
   app.use(helmet());
 
   // Apply rate limiting middleware to limit the number of requests
-  app.use(limiter);
+  // app.use(limiter);
 
   app.use(cookieParser());
 
