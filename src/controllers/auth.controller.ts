@@ -114,69 +114,6 @@ export class AuthController {
     return SuccessMsgResponse(res, MESSAGES.LOGGED_IN);
   }
 
-  // async resetPasswordMail(req: Request, res: Response) {
-  //   const { email } = req.body;
-
-  //   // Find the user by email
-  //   const user = await this.userService.findOne({ email });
-
-  //   if (!user) return NotFoundResponse(res, 'User not found');
-
-  //   // Generate a unique reset token
-  //   const token = crypto.randomBytes(32).toString('hex');
-
-  //   // Set the expiration date to 1 hour from now
-  //   const expiresAt = new Date();
-  //   expiresAt.setHours(expiresAt.getHours() + 1);
-
-  //   // Save the reset token to the database
-  //   const resetToken = await resetTokenService.create({ user: user.id, token, expiresAt });
-
-  //   // Send the password reset email
-  //   let mailSent = await mailController.sendPasswordResetEmail(email, token);
-
-  //   if (!mailSent) return InternalErrorResponse(res, 'Error sending password reset email');
-
-  //   return SuccessMsgResponse(res, 'Password reset email sent successfully');
-  // }
-
-  // async resetPassword(req: Request, res: Response) {
-  //   const { token } = req.params;
-  //   const { newPassword } = req.body;
-
-  //   // Find the reset token in the database
-  //   const resetToken = await resetTokenService.findOne({ token });
-
-  //   if (!resetToken || resetToken.expiresAt < new Date())
-  //     return ForbiddenResponse(res, 'Invalid or expired token');
-
-  //   // Find the associated user and update their password
-  //   const user = await this.userService.findOne({ user: resetToken.user });
-
-  //   if (!user) return res.status(404).json({ message: 'User not found' });
-
-  //   let hashedPassword = await hashPassword(newPassword);
-  //   let updatedUser = await this.userService.update({ id: user.id }, { password: hashedPassword });
-
-  //   if (!updatedUser) return InternalErrorResponse(res, 'Unable to update password');
-
-  //   // Delete the used reset token
-  //   let usedToken = await resetTokenService.softDelete({ id: resetToken.id });
-
-  //   if (!usedToken) return InternalErrorResponse(res, 'Unable to delete token');
-
-  //   return SuccessMsgResponse(res, 'Password reset successful');
-  // }
-
-  async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const data = await this.userService.update({ id: id }, req.body);
-
-    if (!data) return NotFoundResponse(res);
-
-    return SuccessResponse(res, data, MESSAGES.UPDATED);
-  }
-
   @httpDelete('/logout')
   async logout(req: Request, res: Response) {
     const token = req.cookies.token;

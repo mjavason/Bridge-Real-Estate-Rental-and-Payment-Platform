@@ -347,6 +347,10 @@
  *           type: string
  *           minLength: 1
  *           maxLength: 255
+ *         password:
+ *           type: string
+ *           minLength: 5
+ *           maxLength: 100
  *         email:
  *           type: string
  *           minLength: 1

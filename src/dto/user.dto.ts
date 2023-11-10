@@ -18,7 +18,7 @@ export class CreateUserDTO {
   @IsEmail()
   email!: string;
 
-  @IsEnum([ 'client', 'admin', 'landlord'])
+  @IsEnum(['client', 'admin', 'landlord'])
   role!: string;
 
   @IsNumber()
@@ -30,7 +30,6 @@ export class CreateUserDTO {
 }
 
 export class UpdateUserDTO {
-
   @IsOptional()
   @IsString()
   firstName?: string;
@@ -51,10 +50,10 @@ export class UpdateUserDTO {
   @IsNumber()
   accountBalance?: number;
 
-  // @IsOptional()
-  // @IsString()
-  // @MinLength(5)
-  // password?: string;
+  @IsOptional()
+  @IsString()
+  @MinLength(5)
+  password?: string;
 
   @IsOptional()
   @IsBoolean()

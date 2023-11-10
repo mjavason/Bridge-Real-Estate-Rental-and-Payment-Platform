@@ -117,6 +117,11 @@ export class UserController {
   @httpPatch('/', validateBodyDTO(UpdateUserDTO))
   async update(@request() req: Request, @response() res: Response) {
     try {
+      if (req.body.password) {
+        const hashedPassword = await this.userService.hashPassword(req.body.password);
+        req.body.password = hashedPassword;
+      }
+
       const data = await this.userService.update({ id: res.locals.user.id }, req.body);
 
       if (!data) return NotFoundResponse(res);
