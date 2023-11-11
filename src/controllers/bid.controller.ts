@@ -1,10 +1,5 @@
 import { Request, Response } from 'express';
-import {
-  SuccessResponse,
-  InternalErrorResponse,
-  NotFoundResponse,
-  SuccessMsgResponse,
-} from '../helpers/response';
+import { SuccessResponse, InternalErrorResponse, NotFoundResponse } from '../helpers/response';
 import { MESSAGES } from '../constants';
 import {
   controller,
@@ -16,7 +11,7 @@ import {
   response,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { BidService, HouseService } from '../services';
+import { BidService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
 import isAdmin from '../middleware/is_admin.middleware';
@@ -25,25 +20,31 @@ import { validateParamsDTO } from '../middleware/params.validation.middleware';
 import { validateBodyDTO } from '../middleware/body.validation.middleware';
 import { CreateBidDTO, FindBidDTO, UpdateBidDTO } from '../dto/bid.dto';
 import { validateQueryDTO } from '../middleware/query.validation.middleware';
+import { MailController } from './mail.controller';
 
 @controller('/bid', isAuth)
 export class BidController {
   constructor(
     @inject(BidService) private bidService: BidService,
-    @inject(HouseService) private HouseService: HouseService,
+    @inject(MailController) private mailController: MailController,
   ) {}
 
   @httpPost('/', validateBodyDTO(CreateBidDTO))
   async create(@request() req: Request, @response() res: Response) {
     try {
-      const houseData = this.HouseService.findOne({ id: req.body.HouseId });
-
-      console.log(houseData);
-      return SuccessMsgResponse(res, 'it works');
-
+      req.body.UserId = res.locals.user.id;
       const data = await this.bidService.create(req.body);
 
-      if (!data) return InternalErrorResponse(res);
+      if (!data)
+        return InternalErrorResponse(res, 'Unable to create bid. Ensure House and User exists.');
+
+      // send mail notifying both tenant and landlord of bid
+      this.mailController.sendBidCreatedMail(
+        data?.User.email,
+        data?.House.User.email,
+        data?.House.title,
+        data?.status,
+      );
 
       return SuccessResponse(res, data);
     } catch (error: any) {
@@ -120,6 +121,14 @@ export class BidController {
       const data = await this.bidService.update({ id: id }, req.body);
 
       if (!data) return NotFoundResponse(res);
+
+      //send mail notifying both tenant and landlord of bid
+      this.mailController.sendBidUpdateMail(
+        data?.User.email,
+        data?.House.User.email,
+        data?.House.title,
+        data?.status,
+      );
 
       return SuccessResponse(res, data, MESSAGES.UPDATED);
     } catch (error: any) {

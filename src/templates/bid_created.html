@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{houseTitle}} Bid Created</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="email-container" id="email-container">
+      <div class="header" id="header">
+        <h1>{{houseTitle}} Bid Created</h1>
+      </div>
+      <div class="content" id="content">
+        <h2>Dear User,</h2>
+        <p>
+          This email is to inform you that a new bid has been created for the house with the title: {{houseTitle}}.
+        </p>
+        <p>The bid is currently in the following status:</p>
+        <strong>{{bidStatus}}</strong>
+        <p>
+          To access more detailed information, please log into your app. If you have any questions or require further assistance, feel free to contact our support team at Bridge Real Estate.
+        </p>
+        <p>
+          Best regards,
+          <br/>
+          Bridge Real Estate
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

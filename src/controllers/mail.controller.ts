@@ -86,4 +86,78 @@ export class MailController {
 
     return { info };
   }
+
+  async sendBidUpdateMail(
+    tenantEmail: string,
+    landlordEmail: string,
+    houseTitle: string,
+    bidStatus: string,
+  ) {
+    // Load the email template
+    const templatePath = 'src/templates/bid.html';
+
+    // Replace placeholders with actual data
+    const data = {
+      bidStatus,
+      houseTitle,
+    };
+
+    // Compile the template
+    const compiledTemplate = await this.mailService.renderMailTemplate(templatePath, data);
+
+    if (!compiledTemplate) return false;
+    // Send the email
+    const info = await this.mailService.sendMail(
+      tenantEmail,
+      compiledTemplate,
+      `${APP_NAME} Bid Status Update`,
+    );
+
+    const info2 = await this.mailService.sendMail(
+      landlordEmail,
+      compiledTemplate,
+      `${APP_NAME} Bid Status Update`,
+    );
+
+    console.log(`Bid status update email sent to: ${landlordEmail} and ${tenantEmail}`);
+
+    return { info, info2 };
+  }
+
+  async sendBidCreatedMail(
+    tenantEmail: string,
+    landlordEmail: string,
+    houseTitle: string,
+    bidStatus: string,
+  ) {
+    // Load the email template
+    const templatePath = 'src/templates/bid_created.html';
+
+    // Replace placeholders with actual data
+    const data = {
+      bidStatus,
+      houseTitle,
+    };
+
+    // Compile the template
+    const compiledTemplate = await this.mailService.renderMailTemplate(templatePath, data);
+
+    if (!compiledTemplate) return false;
+    // Send the email
+    const info = await this.mailService.sendMail(
+      tenantEmail,
+      compiledTemplate,
+      `${APP_NAME} Bid Created`,
+    );
+
+    const info2 = await this.mailService.sendMail(
+      landlordEmail,
+      compiledTemplate,
+      `${APP_NAME} Bid Created`,
+    );
+
+    console.log(`Bid created email sent to: ${landlordEmail} and ${tenantEmail}`);
+
+    return { info, info2 };
+  }
 }

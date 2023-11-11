@@ -1,6 +1,7 @@
 interface IHouse {
   id?: number | string;
   UserId?: number | string;
+  User?: any;
   title: string;
   description: string;
   price: number;

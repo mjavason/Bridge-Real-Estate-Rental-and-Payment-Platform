@@ -32,8 +32,8 @@ Bid.init(
 );
 
 House.hasMany(Bid);
-Bid.belongsTo(House);
 User.hasMany(Bid);
+Bid.belongsTo(House);
 Bid.belongsTo(User);
 
 export default Bid;

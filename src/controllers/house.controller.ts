@@ -28,7 +28,7 @@ export class HouseController {
 
       const data = await this.houseService.create(req.body);
 
-      if (!data) return InternalErrorResponse(res);
+      if (!data) return InternalErrorResponse(res, 'Unable to create house. Ensure User exists.');
 
       return SuccessResponse(res, data);
     } catch (error: any) {

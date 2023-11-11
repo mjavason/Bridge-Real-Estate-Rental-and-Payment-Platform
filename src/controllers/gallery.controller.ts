@@ -26,7 +26,8 @@ export class GalleryController {
     try {
       const data = await this.galleryService.create(req.body);
 
-      if (!data) return InternalErrorResponse(res);
+      if (!data)
+        return InternalErrorResponse(res, 'Unable to create gallery entry. Ensure House exists.');
 
       return SuccessResponse(res, data);
     } catch (error: any) {
