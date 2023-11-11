@@ -111,7 +111,6 @@
  *         description: Bad request.
  */
 
-
 /**
  * @swagger
  * /gallery/search:

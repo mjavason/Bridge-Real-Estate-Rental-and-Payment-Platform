@@ -2,8 +2,6 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/sequelize';
 import IHouse from '../interfaces/house.interface';
 import User from './user.model';
-import Gallery from './gallery.model';
-import Bid from './bid.model';
 
 class House extends Model<IHouse> {}
 

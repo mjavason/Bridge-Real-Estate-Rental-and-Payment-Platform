@@ -1,5 +1,11 @@
 import { Container } from 'inversify';
-import { AuthController, GalleryController, HouseController, MailController, BidController } from './controllers';
+import {
+  AuthController,
+  GalleryController,
+  HouseController,
+  MailController,
+  BidController,
+} from './controllers';
 import { interfaces } from 'inversify-express-utils';
 import { BidService, MailService, UserService, HouseService, GalleryService } from './services';
 

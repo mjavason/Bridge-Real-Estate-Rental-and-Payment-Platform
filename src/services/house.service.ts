@@ -7,7 +7,6 @@ import { injectable } from 'inversify';
  */
 @injectable()
 export class HouseService {
-
   /**
    * Create a new house.
    *
@@ -110,7 +109,6 @@ export class HouseService {
       return null;
     }
   }
-
 
   /**
    * Soft delete a house based on search criteria.

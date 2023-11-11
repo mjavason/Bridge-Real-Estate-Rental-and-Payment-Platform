@@ -115,7 +115,6 @@
  *         description: Bad request.
  */
 
-
 /**
  * @swagger
  * /house/search:
@@ -165,7 +164,6 @@
  *       '400':
  *         description: Bad request.
  */
-
 
 /**
  * @swagger
