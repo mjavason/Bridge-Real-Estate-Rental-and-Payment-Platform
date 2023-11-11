@@ -9,7 +9,11 @@ import {
   IsNotEmpty,
 } from 'class-validator';
 
-export const userRoles = ['tenant', 'admin', 'landlord'];
+export enum UserRoles {
+  TENANT = 'tenant',
+  ADMIN = 'admin',
+  LANDLORD = 'landlord',
+}
 
 export class CreateUserDTO {
   @IsNotEmpty()
@@ -25,7 +29,7 @@ export class CreateUserDTO {
   email!: string;
 
   @IsNotEmpty()
-  @IsEnum(userRoles)
+  @IsEnum(UserRoles)
   role!: string;
 
   @IsNotEmpty()
@@ -52,7 +56,7 @@ export class UpdateUserDTO {
   email?: string;
 
   @IsOptional()
-  @IsEnum(userRoles)
+  @IsEnum(UserRoles)
   role?: string;
 
   @IsOptional()
@@ -87,7 +91,7 @@ export class FindUserDTO {
   email?: string;
 
   @IsOptional()
-  @IsEnum(userRoles)
+  @IsEnum(UserRoles)
   role?: string;
 
   @IsOptional()

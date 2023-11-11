@@ -1,11 +1,14 @@
 // gallery.dto.ts
 import { IsString, IsBoolean, IsOptional, IsNotEmpty, IsEnum } from 'class-validator';
 
-export const galleryTypes = ['video', 'audio'];
+export enum GalleryTypes {
+  VIDEO = 'video',
+  AUDIO = 'audio',
+}
 
 export class CreateGalleryDTO {
   @IsNotEmpty()
-  @IsEnum(galleryTypes)
+  @IsEnum(GalleryTypes)
   type!: string;
 
   @IsNotEmpty()
@@ -19,7 +22,7 @@ export class CreateGalleryDTO {
 
 export class UpdateGalleryDTO {
   @IsOptional()
-  @IsEnum(galleryTypes)
+  @IsEnum(GalleryTypes)
   type?: string;
 
   @IsOptional()
@@ -41,7 +44,7 @@ export class FindGalleryDTO {
   HouseId?: number;
 
   @IsOptional()
-  @IsEnum(galleryTypes)
+  @IsEnum(GalleryTypes)
   type?: string;
 
   @IsOptional()

@@ -1,7 +1,13 @@
 // bid.dto.ts
 import { IsNumber, IsString, IsBoolean, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
 
-export const bidStatuses = ['pending', 'awaiting_payment', 'paid', 'rejected', 'counter_bid'];
+export enum BidStatuses {
+  PENDING = 'pending',
+  AWAITING_PAYMENT = 'awaiting_payment',
+  PAID = 'paid',
+  REJECTED = 'rejected',
+  COUNTER_BID = 'counter_bid',
+}
 
 export class CreateBidDTO {
   @IsNotEmpty()
@@ -9,7 +15,7 @@ export class CreateBidDTO {
   amount!: number;
 
   @IsNotEmpty()
-  @IsEnum(bidStatuses)
+  @IsEnum(BidStatuses)
   status!: string;
 
   @IsNotEmpty()
@@ -23,7 +29,7 @@ export class UpdateBidDTO {
   amount?: number;
 
   @IsOptional()
-  @IsEnum(bidStatuses)
+  @IsEnum(BidStatuses)
   status?: string;
 
   @IsOptional()
@@ -49,6 +55,6 @@ export class FindBidDTO {
   amount?: number;
 
   @IsOptional()
-  @IsEnum(bidStatuses)
+  @IsEnum(BidStatuses)
   status?: string;
 }

@@ -1,5 +1,10 @@
 import { Request, Response } from 'express';
-import { SuccessResponse, InternalErrorResponse, NotFoundResponse } from '../helpers/response';
+import {
+  SuccessResponse,
+  InternalErrorResponse,
+  NotFoundResponse,
+  SuccessMsgResponse,
+} from '../helpers/response';
 import { MESSAGES } from '../constants';
 import {
   controller,
@@ -11,7 +16,7 @@ import {
   response,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { BidService } from '../services';
+import { BidService, HouseService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
 import isAdmin from '../middleware/is_admin.middleware';
@@ -23,11 +28,19 @@ import { validateQueryDTO } from '../middleware/query.validation.middleware';
 
 @controller('/bid', isAuth)
 export class BidController {
-  constructor(@inject(BidService) private bidService: BidService) {}
+  constructor(
+    @inject(BidService) private bidService: BidService,
+    @inject(HouseService) private HouseService: HouseService,
+  ) {}
 
   @httpPost('/', validateBodyDTO(CreateBidDTO))
   async create(@request() req: Request, @response() res: Response) {
     try {
+      const houseData = this.HouseService.findOne({ id: req.body.HouseId });
+
+      console.log(houseData);
+      return SuccessMsgResponse(res, 'it works');
+
       const data = await this.bidService.create(req.body);
 
       if (!data) return InternalErrorResponse(res);

@@ -1,5 +1,5 @@
 import { IsString, IsEmail, MinLength, IsEnum, IsNotEmpty } from 'class-validator';
-import { userRoles } from './user.dto';
+import { UserRoles } from './user.dto';
 
 export class RegisterUserDTO {
   @IsNotEmpty()
@@ -15,7 +15,7 @@ export class RegisterUserDTO {
   email!: string;
 
   @IsNotEmpty()
-  @IsEnum(userRoles)
+  @IsEnum(UserRoles)
   role!: string;
 
   @IsNotEmpty()
