@@ -27,6 +27,60 @@
 
 /**
  * @swagger
+ * /user/credit:
+ *   post:
+ *     summary: Credit a user's account
+ *     description: Credit a user's account with the provided amount.
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       description: User credit data.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserAccountOperationsDTO'
+ *     responses:
+ *       '200':
+ *         description: User account credited successfully.
+ *       '400':
+ *         description: Bad request.
+ *       '401':
+ *         description: Unauthorized. User not authenticated.
+ *       '500':
+ *         description: Internal Server Error.
+ */
+
+/**
+ * @swagger
+ * /user/debit:
+ *   post:
+ *     summary: Debit a user's account
+ *     description: Debit a user's account with the provided amount.
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       description: User debit data.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserAccountOperationsDTO'
+ *     responses:
+ *       '200':
+ *         description: User account debited successfully.
+ *       '400':
+ *         description: Bad request.
+ *       '401':
+ *         description: Unauthorized. User not authenticated.
+ *       '500':
+ *         description: Internal Server Error.
+ */
+
+/**
+ * @swagger
  * /user/profile:
  *   get:
  *     summary: Get user profile
@@ -44,6 +98,85 @@
  *       '500':
  *         description: Internal Server Error.
  */
+
+/**
+ * @swagger
+ * /user/exists:
+ *   get:
+ *     summary: Check if a user exists
+ *     description: Check if a user exists based on query parameters.
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: parameters
+ *         description:  Query parameters for searching users.
+ *         schema:
+ *           $ref: '#/components/schemas/FindUserDTO'
+ *     responses:
+ *       '200':
+ *         description: User exists.
+ *       '404':
+ *         description: User not found.
+ *       '401':
+ *         description: Unauthorized. User not authenticated.
+ *       '500':
+ *         description: Internal Server Error.
+ */
+
+/**
+ * @swagger
+ * /user/count:
+ *   get:
+ *     summary: Get user count
+ *     description: Get the count of users based on query parameters.
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: parameters
+ *         description:  Query parameters for searching users.
+ *         schema:
+ *           $ref: '#/components/schemas/FindUserDTO'
+ *     responses:
+ *       '200':
+ *         description: User count retrieved successfully.
+ *       '404':
+ *         description: No users found.
+ *       '401':
+ *         description: Unauthorized. User not authenticated.
+ *       '500':
+ *         description: Internal Server Error.
+ */
+
+/**
+ * @swagger
+ * /user/search:
+ *   get:
+ *     summary: Find users
+ *     description: Find users based on query parameters.
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: parameters
+ *         description:  Query parameters for searching users.
+ *         schema:
+ *           $ref: '#/components/schemas/FindUserDTO'
+ *     responses:
+ *       '200':
+ *         description: Users retrieved successfully.
+ *       '404':
+ *         description: No users found.
+ *       '401':
+ *         description: Unauthorized. User not authenticated.
+ *       '500':
+ *         description: Internal Server Error.
+ */
+
 
 /**
  * @swagger
@@ -72,164 +205,6 @@
  *         description: Internal Server Error.
  */
 
-/**
- * @swagger
- * /user/exists:
- *   get:
- *     summary: Check if a user exists
- *     description: Check if a user exists based on query parameters.
- *     tags: [User]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: query
- *         name: id
- *         description: The ID of the user.
- *         schema:
- *           type: integer
- *       - in: query
- *         name: firstName
- *         description: The first name of the user.
- *         schema:
- *           type: string
- *       - in: query
- *         name: lastName
- *         description: The last name of the user.
- *         schema:
- *           type: string
- *       - in: query
- *         name: email
- *         description: The email of the user.
- *         schema:
- *           type: string
- *           format: email
- *       - in: query
- *         name: role
- *         description: The role of the user.
- *         schema:
- *           type: string
- *           enum: ['tenant', 'admin', 'landlord']
- *       - in: query
- *         name: accountBalance
- *         description: The account balance of the user.
- *         schema:
- *           type: integer
- *     responses:
- *       '200':
- *         description: User exists.
- *       '404':
- *         description: User not found.
- *       '401':
- *         description: Unauthorized. User not authenticated.
- *       '500':
- *         description: Internal Server Error.
- */
-
-/**
- * @swagger
- * /user/count:
- *   get:
- *     summary: Get user count
- *     description: Get the count of users based on query parameters.
- *     tags: [User]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: query
- *         name: id
- *         description: The ID of the user.
- *         schema:
- *           type: integer
- *       - in: query
- *         name: firstName
- *         description: The first name of the user.
- *         schema:
- *           type: string
- *       - in: query
- *         name: lastName
- *         description: The last name of the user.
- *         schema:
- *           type: string
- *       - in: query
- *         name: email
- *         description: The email of the user.
- *         schema:
- *           type: string
- *           format: email
- *       - in: query
- *         name: role
- *         description: The role of the user.
- *         schema:
- *           type: string
- *           enum: ['tenant', 'admin', 'landlord']
- *       - in: query
- *         name: accountBalance
- *         description: The account balance of the user.
- *         schema:
- *           type: integer
- *     responses:
- *       '200':
- *         description: User count retrieved successfully.
- *       '404':
- *         description: No users found.
- *       '401':
- *         description: Unauthorized. User not authenticated.
- *       '500':
- *         description: Internal Server Error.
- */
-
-/**
- * @swagger
- * /user:
- *   get:
- *     summary: Find users
- *     description: Find users based on query parameters.
- *     tags: [User]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: query
- *         name: id
- *         description: The ID of the user.
- *         schema:
- *           type: integer
- *       - in: query
- *         name: firstName
- *         description: The first name of the user.
- *         schema:
- *           type: string
- *       - in: query
- *         name: lastName
- *         description: The last name of the user.
- *         schema:
- *           type: string
- *       - in: query
- *         name: email
- *         description: The email of the user.
- *         schema:
- *           type: string
- *           format: email
- *       - in: query
- *         name: role
- *         description: The role of the user.
- *         schema:
- *           type: string
- *           enum: ['tenant', 'admin', 'landlord']
- *       - in: query
- *         name: accountBalance
- *         description: The account balance of the user.
- *         schema:
- *           type: integer
- *     responses:
- *       '200':
- *         description: Users retrieved successfully.
- *       '404':
- *         description: No users found.
- *       '401':
- *         description: Unauthorized. User not authenticated.
- *       '500':
- *         description: Internal Server Error.
- */
 
 /**
  * @swagger
@@ -357,7 +332,7 @@
  *           maxLength: 255
  *         role:
  *           type: string
- *           enum: [ admin, tenant, landlord]
+ *           enum: [admin, tenant, landlord]
  *         accountBalance:
  *           type: number
  *         deleted:
@@ -367,7 +342,7 @@
  *       type: object
  *       properties:
  *         id:
- *           type: number
+ *           type: integer
  *         firstName:
  *           type: string
  *           minLength: 1
@@ -383,6 +358,10 @@
  *         role:
  *           type: string
  *           enum: [tenant, admin, landlord]
- *         accountBalance:
- *           type: number
+ *
+ *     UserAccountOperationsDTO:
+ *       type: object
+ *       properties:
+ *         amount:
+ *           type: integer
  */

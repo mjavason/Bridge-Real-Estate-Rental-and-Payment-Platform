@@ -11,23 +11,26 @@ import {
   response,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { BidService, HouseService } from '../services';
+import { BidService, HouseService, UserService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
 import isAdmin from '../middleware/is_admin.middleware';
 import { UniqueIdDTO } from '../dto/unique_id.dto';
 import { validateParamsDTO } from '../middleware/params.validation.middleware';
 import { validateBodyDTO } from '../middleware/body.validation.middleware';
-import { CreateBidDTO, FindBidDTO, UpdateBidDTO } from '../dto/bid.dto';
+import { BidStatuses, CreateBidDTO, FindBidDTO, UpdateBidDTO } from '../dto/bid.dto';
 import { validateQueryDTO } from '../middleware/query.validation.middleware';
 import { MailController } from './mail.controller';
 import isTenant from '../middleware/is_tenant.middleware';
+import sequelize from 'sequelize/types/sequelize';
+import logger from '../helpers/logger';
 
 @controller('/bid', isAuth)
 export class BidController {
   constructor(
     @inject(BidService) private bidService: BidService,
     @inject(HouseService) private houseService: HouseService,
+    @inject(UserService) private userService: UserService,
     @inject(MailController) private mailController: MailController,
   ) {}
 
@@ -54,6 +57,39 @@ export class BidController {
       }
 
       return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
+
+  @httpPost('/:id/pay', validateParamsDTO(UniqueIdDTO))
+  async makePayment(@request() req: Request, @response() res: Response) {
+    try {
+      const { id } = req.params;
+      const data = await this.bidService.update(
+        { id: id, status: BidStatuses.AWAITING_PAYMENT },
+        { status: BidStatuses.PAID },
+      );
+
+      if (!data) return NotFoundResponse(res, 'Bid with awaiting payment status not found');
+
+      // Increment landlords balance
+      const landlordData = await this.userService.incrementAccountBalance(
+        { id: data.House.User.id },
+        data.amount,
+      );
+
+      if (!landlordData) logger.error('Issue occured with updating landlords balance');
+
+      //send mail notifying both tenant and landlord of bid update
+      this.mailController.sendBidUpdateMail(
+        data?.User.email,
+        data?.House.User.email,
+        data?.House.title,
+        data?.status,
+      );
+
+      return SuccessResponse(res, data, 'House paid for successfully');
     } catch (error: any) {
       return InternalErrorResponse(res, error.message);
     }
@@ -129,7 +165,7 @@ export class BidController {
 
       if (!data) return NotFoundResponse(res);
 
-      //send mail notifying both tenant and landlord of bid
+      //send mail notifying both tenant and landlord of bid update
       this.mailController.sendBidUpdateMail(
         data?.User.email,
         data?.House.User.email,

@@ -42,6 +42,12 @@ export class CreateUserDTO {
   password!: string;
 }
 
+export class UserAccountOperationsDTO {
+  @IsNotEmpty()
+  @IsNumber()
+  amount!: number;
+}
+
 export class UpdateUserDTO {
   @IsOptional()
   @IsString()
@@ -93,8 +99,4 @@ export class FindUserDTO {
   @IsOptional()
   @IsEnum(UserRoles)
   role?: string;
-
-  @IsOptional()
-  @IsString()
-  accountBalance?: number;
 }

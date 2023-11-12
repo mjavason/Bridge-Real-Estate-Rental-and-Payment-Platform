@@ -140,34 +140,6 @@
 /**
  * @swagger
  * /house/{id}:
- *   get:
- *     summary: Find a house by ID
- *     description: Find a house by ID based on query parameters.
- *     tags: [House]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: query
- *         name: parameters
- *         description: Query parameters for finding a house by ID.
- *         schema:
- *           $ref: '#/components/schemas/FindHouseDTO'
- *       - in: path
- *         name: id
- *         description: The ID of the house to find.
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       '200':
- *         description: House retrieved successfully.
- *       '400':
- *         description: Bad request.
- */
-
-/**
- * @swagger
- * /house/{id}:
  *   patch:
  *     summary: Update a house
  *     description: Update a house with the provided data.

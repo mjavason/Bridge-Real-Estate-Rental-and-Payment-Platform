@@ -70,23 +70,7 @@
  *         description: Count of gallery entries retrieved successfully.
  *       '400':
  *         description: Bad request.
- */
-
-/**
- * @swagger
- * /gallery:
- *   get:
- *     summary: Get all gallery entries
- *     description: Get a list of all gallery entries.
- *     tags: [Gallery]
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       '200':
- *         description: List of gallery entries retrieved successfully.
- *       '400':
- *         description: Bad request.
- */
+*/
 
 /**
  * @swagger

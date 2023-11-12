@@ -30,6 +30,35 @@
 
 /**
  * @swagger
+ * /bid/{id}/pay:
+ *   post:
+ *     summary: Pay for a house through a bid
+ *     description: Initiate payment for the specified bid.
+ *     tags: [Bid]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: The ID of the bid to pay for.
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Payment successful.
+ *       '400':
+ *         description: Bad request.
+ *       '404':
+ *         description: Bid not found.
+ *       '401':
+ *         description: Unauthorized - Missing or invalid token.
+ */
+
+
+
+/**
+ * @swagger
  * /bid/exists:
  *   get:
  *     summary: Check if a bid exists
@@ -68,22 +97,6 @@
  *     responses:
  *       '200':
  *         description: Count of bids retrieved successfully.
- *       '400':
- *         description: Bad request.
- */
-
-/**
- * @swagger
- * /bid:
- *   get:
- *     summary: Get all bids
- *     description: Get a list of all bids.
- *     tags: [Bid]
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       '200':
- *         description: List of bids retrieved successfully.
  *       '400':
  *         description: Bad request.
  */

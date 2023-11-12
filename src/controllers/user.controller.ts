@@ -15,7 +15,12 @@ import { UserService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
 import isAdmin from '../middleware/is_admin.middleware';
-import { CreateUserDTO, FindUserDTO, UpdateUserDTO } from '../dto/user.dto';
+import {
+  CreateUserDTO,
+  FindUserDTO,
+  UpdateUserDTO,
+  UserAccountOperationsDTO,
+} from '../dto/user.dto';
 import { validateQueryDTO } from '../middleware/query.validation.middleware';
 import { validateBodyDTO } from '../middleware/body.validation.middleware';
 import { validateParamsDTO } from '../middleware/params.validation.middleware';
@@ -33,6 +38,38 @@ export class UserController {
       if (!data) return InternalErrorResponse(res);
 
       return SuccessResponse(res, data);
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
+
+  @httpPost('/credit', validateBodyDTO(UserAccountOperationsDTO))
+  async credit(@request() req: Request, @response() res: Response) {
+    try {
+      const data = await this.userService.incrementAccountBalance(
+        { id: res.locals.user.id },
+        req.body.amount,
+      );
+
+      if (!data) return InternalErrorResponse(res);
+
+      return SuccessResponse(res, data, 'User account credited successfully');
+    } catch (error: any) {
+      return InternalErrorResponse(res, error.message);
+    }
+  }
+
+  @httpPost('/debit', validateBodyDTO(UserAccountOperationsDTO))
+  async debit(@request() req: Request, @response() res: Response) {
+    try {
+      const data = await this.userService.decrementAccountBalance(
+        { id: res.locals.user.id },
+        req.body.amount,
+      );
+
+      if (!data) return InternalErrorResponse(res);
+
+      return SuccessResponse(res, data, 'User account debited successfully');
     } catch (error: any) {
       return InternalErrorResponse(res, error.message);
     }

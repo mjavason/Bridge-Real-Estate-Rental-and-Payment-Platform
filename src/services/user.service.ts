@@ -2,6 +2,7 @@ import UserModel from '../models/user.model';
 import IUser from '../interfaces/user.interface';
 import bcrypt from 'bcrypt';
 import { injectable } from 'inversify';
+import sequelize from '../config/sequelize';
 
 /**
  * Service class for user-related operations.
@@ -225,6 +226,63 @@ export class UserService {
       return count;
     } catch (error: any) {
       console.error('Error in getCount:', error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Increment a user's account balance.
+   *
+   * @param {Partial<IUser>} searchDetails - Search criteria.
+   * @param {number} incrementAmount - Amount to increment the account balance.
+   * @returns {Promise<IUser|null>} The updated user or null if the user is not found or on error.
+   */
+  async incrementAccountBalance(searchDetails: Partial<IUser>, incrementAmount: number) {
+    try {
+      const user = await UserModel.findOne({
+        where: { ...searchDetails, deleted: false },
+      });
+
+      if (user) {
+        await user.update({
+          accountBalance: sequelize.literal(`"accountBalance" + ${incrementAmount}`),
+        });
+
+        return user.get();
+      }
+
+      return null;
+    } catch (error: any) {
+      console.error('Error in incrementAccountBalance:', error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Decrement a user's account balance.
+   *
+   * @param {Partial<IUser>} searchDetails - Search criteria.
+   * @param {number} decrementAmount - Amount to decrement the account balance.
+   * @returns {Promise<IUser|null>} The updated user or null if the user is not found or on error.
+   */
+  async decrementAccountBalance(searchDetails: Partial<IUser>, decrementAmount: number) {
+    try {
+      const user = await UserModel.findOne({
+        where: { ...searchDetails, deleted: false },
+      });
+
+      if (user) {
+        // Adjust the case of the column name based on your actual database schema
+        await user.update({
+          accountBalance: sequelize.literal(`"accountBalance" - ${decrementAmount}`),
+        });
+
+        return user.get();
+      }
+
+      return null;
+    } catch (error: any) {
+      console.error('Error in decrementAccountBalance:', error.message);
       return null;
     }
   }

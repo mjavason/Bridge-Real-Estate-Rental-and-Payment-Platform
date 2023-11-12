@@ -5,6 +5,7 @@ import {
   controller,
   httpDelete,
   httpGet,
+  httpPatch,
   httpPost,
   request,
   response,
@@ -98,7 +99,7 @@ export class HouseController {
     }
   }
 
-  @httpPost('/:id', validateParamsDTO(UniqueIdDTO))
+  @httpPatch('/:id', validateParamsDTO(UniqueIdDTO))
   async update(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
