@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { SuccessResponse, InternalErrorResponse, NotFoundResponse } from '../helpers/response';
-import { MESSAGES } from '../constants';
+import { MESSAGES, REDIS_OPTIONS } from '../constants';
 import {
   controller,
   httpDelete,
@@ -25,6 +25,7 @@ import { validateQueryDTO } from '../middleware/query.validation.middleware';
 import { validateBodyDTO } from '../middleware/body.validation.middleware';
 import { validateParamsDTO } from '../middleware/params.validation.middleware';
 import { UniqueIdDTO } from '../dto/unique_id.dto';
+import redisClient from '../config/redis';
 
 @controller('/user', isAuth)
 export class UserController {
@@ -84,6 +85,10 @@ export class UserController {
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
 
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
+
       return SuccessResponse(res, data);
     } catch (error: any) {
       return InternalErrorResponse(res, error.message);
@@ -111,6 +116,10 @@ export class UserController {
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, []);
 
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
+
       return SuccessResponse(res, data);
     } catch (error: any) {
       return InternalErrorResponse(res, error.message);
@@ -124,6 +133,10 @@ export class UserController {
 
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, { data: 0 });
+
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
 
       return SuccessResponse(res, data);
     } catch (error: any) {
@@ -144,6 +157,10 @@ export class UserController {
 
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
+
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
 
       return SuccessResponse(res, data);
     } catch (error: any) {

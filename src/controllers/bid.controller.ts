@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { SuccessResponse, InternalErrorResponse, NotFoundResponse } from '../helpers/response';
-import { MESSAGES } from '../constants';
+import { MESSAGES, REDIS_EXPIRATION_IN_SECONDS, REDIS_OPTIONS } from '../constants';
 import {
   controller,
   httpDelete,
@@ -24,6 +24,8 @@ import { MailController } from './mail.controller';
 import isTenant from '../middleware/is_tenant.middleware';
 import sequelize from 'sequelize/types/sequelize';
 import logger from '../helpers/logger';
+import cacheMiddleware from '../middleware/cache.middleware';
+import redisClient from '../config/redis';
 
 @controller('/bid', isAuth)
 export class BidController {
@@ -101,7 +103,11 @@ export class BidController {
       const data = await this.bidService.exists(req.query);
 
       // If nothing exists, return 0 as the count
-      if (!data) return SuccessResponse(res, []);
+      if (!data) return SuccessResponse(res, false);
+
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
 
       return SuccessResponse(res, data);
     } catch (error: any) {
@@ -117,6 +123,10 @@ export class BidController {
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, { data: 0 });
 
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
+
       return SuccessResponse(res, data);
     } catch (error: any) {
       return InternalErrorResponse(res, error.message);
@@ -130,6 +140,10 @@ export class BidController {
 
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
+
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
 
       return SuccessResponse(res, data);
     } catch (error: any) {
@@ -150,6 +164,10 @@ export class BidController {
 
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
+
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
 
       return SuccessResponse(res, data);
     } catch (error: any) {

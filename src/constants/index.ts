@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { SetOptions } from 'redis';
 dotenv.config({ path: './.env' });
 
 // Basic app info/configuration
@@ -21,6 +22,13 @@ export const POSTGRES_DB_USERNAME = process.env.POSTGRES_DB_USERNAME || 'postgre
 export const JWT_SECRET = process.env.JWT_SECRET || 'jwt-secret';
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access-token-secret';
 export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'refresh-token-secret';
+
+// Redis configuration
+export const REDIS_URL = process.env.REDIS_URL || 'redis://red-abc123:6379';
+export const REDIS_EXPIRATION_IN_SECONDS = 3600; // 1 hour
+export const REDIS_OPTIONS: SetOptions = {
+  EX: REDIS_EXPIRATION_IN_SECONDS,
+};
 
 // Inhouse status codes
 export const STATUS_CODES = {

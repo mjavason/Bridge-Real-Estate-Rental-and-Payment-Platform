@@ -19,13 +19,18 @@ const transporter = nodeMailer.createTransport({
 @injectable()
 export class MailService {
   sendMail = async (recipientEmail: string, mailHtmlBody: string, mailSubject: string) => {
-    // This is where the actual email message is built. Things like CC, recipients, attachments, and so on are configured here.
-    return await transporter.sendMail({
-      from: `#1OODaysOfAPIAwesomeness <${MAIL_ADDRESS}>`,
-      to: recipientEmail,
-      subject: mailSubject,
-      html: mailHtmlBody,
-    });
+    try {
+      // This is where the actual email message is built. Things like CC, recipients, attachments, and so on are configured here.
+      return await transporter.sendMail({
+        from: `<${MAIL_ADDRESS}>`,
+        to: recipientEmail,
+        subject: mailSubject,
+        html: mailHtmlBody,
+      });
+    } catch (e: any) {
+      console.log(e.message);
+      return null;
+    }
   };
 
   async renderMailTemplate(templatePath: string, data: object) {

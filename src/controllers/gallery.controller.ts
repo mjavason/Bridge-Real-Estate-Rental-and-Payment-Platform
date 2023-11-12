@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { SuccessResponse, InternalErrorResponse, NotFoundResponse } from '../helpers/response';
-import { MESSAGES } from '../constants';
+import { MESSAGES, REDIS_OPTIONS } from '../constants';
 import {
   controller,
   httpDelete,
@@ -16,6 +16,7 @@ import isAuth from '../middleware/is_auth.middleware';
 import isAdmin from '../middleware/is_admin.middleware';
 import { UniqueIdDTO } from '../dto/unique_id.dto';
 import { validateParamsDTO } from '../middleware/params.validation.middleware';
+import redisClient from '../config/redis';
 
 @controller('/gallery', isAuth)
 export class GalleryController {
@@ -43,6 +44,10 @@ export class GalleryController {
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, []);
 
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
+
       return SuccessResponse(res, data);
     } catch (error: any) {
       return InternalErrorResponse(res, error.message);
@@ -57,6 +62,10 @@ export class GalleryController {
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, { data: 0 });
 
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
+
       return SuccessResponse(res, data);
     } catch (error: any) {
       return InternalErrorResponse(res, error.message);
@@ -70,6 +79,10 @@ export class GalleryController {
 
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
+
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
 
       return SuccessResponse(res, data);
     } catch (error: any) {
@@ -90,6 +103,10 @@ export class GalleryController {
 
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
+
+      // Save data to cache
+      const key = req.originalUrl || req.url;
+      redisClient.set(key, JSON.stringify(data), REDIS_OPTIONS);
 
       return SuccessResponse(res, data);
     } catch (error: any) {
