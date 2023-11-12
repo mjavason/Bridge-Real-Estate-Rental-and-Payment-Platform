@@ -14,12 +14,12 @@ const SWAGGER_OPTIONS = {
     },
     servers: [
       {
-        url: 'http://localhost:3000/api/v1', // Development environment
-        description: 'Development Environment',
+        url: 'https://bridge-real-estate-rental-and-payment.onrender.com/api/v1', // Staging environment
+        description: 'Staging Environment',
       },
       {
-        url: 'https://api.example.com/api/v1', // Staging environment
-        description: 'Staging Environment',
+        url: 'http://localhost:3000/api/v1', // Development environment
+        description: 'Development Environment',
       },
       {
         url: 'https://api.example.com/api/v1', // Production environment
