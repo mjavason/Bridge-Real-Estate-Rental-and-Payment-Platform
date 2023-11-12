@@ -22,12 +22,12 @@ Bid.init(
     },
   },
   {
-    sequelize,
     defaultScope: {
       attributes: { exclude: ['deleted', 'HouseId', 'UserId'] },
       include: [House, User],
     },
     timestamps: true,
+    sequelize,
   },
 );
 

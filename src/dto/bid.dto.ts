@@ -3,10 +3,10 @@ import { IsNumber, IsString, IsBoolean, IsNotEmpty, IsOptional, IsEnum } from 'c
 
 export enum BidStatuses {
   PENDING = 'pending',
-  AWAITING_PAYMENT = 'awaiting_payment',
+  AWAITING_PAYMENT = 'awaiting payment',
   PAID = 'paid',
   REJECTED = 'rejected',
-  COUNTER_BID = 'counter_bid',
+  COUNTER_BID = 'counter bid',
 }
 
 export class CreateBidDTO {

@@ -2,14 +2,12 @@ import { NextFunction, Request, Response } from 'express';
 import { AuthFailureResponse } from '../helpers/response';
 
 const isTenant = async (req: Request, res: Response, next: NextFunction) => {
-  const user = res.locals.user;
+  const loggedInUser = res.locals.user;
 
-  const loggedUser = user;
-  if (loggedUser && loggedUser.role !== 'tenant') {
-    console.log('Invalid login details, not admin');
-    return AuthFailureResponse(res);
-  }
-  return next();
+  if (loggedInUser.role === 'tenant' || loggedInUser.role === 'admin') return next();
+
+  console.log('Unauthorized! Not Tenant');
+  return AuthFailureResponse(res, 'Unauthorized! This is for tenants only');
 };
 
 export default isTenant;

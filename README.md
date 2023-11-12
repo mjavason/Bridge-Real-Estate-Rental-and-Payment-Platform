@@ -10,7 +10,6 @@ This platform serves as a centralized hub for handling various aspects of real e
 
 - **Live Platform:** [Bridge Real Estate Rental and Payment Platform](https://bridge-real-estate-rental-and-payment.onrender.com)
 - **API Documentation:** [Swagger Documentation](https://bridge-real-estate-rental-and-payment.onrender.com/docs)
-- **GitHub Repository:** [GitHub Repository](https://github.com/mjavason/Bridge-Real-Estate-Rental-and-Payment-Platform)
 
 ## Getting Started
 

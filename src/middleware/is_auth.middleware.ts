@@ -9,13 +9,12 @@ const isAuth = async (req: Request, res: Response, next: NextFunction) => {
   const accessToken = req.cookies.token;
   console.log('token', req.cookies.token);
 
-  if (!accessToken) {
-    return AccessTokenErrorResponse(res, 'Please login');
-  }
+  if (!accessToken) return AccessTokenErrorResponse(res, 'Please login');
+
   const decoded = await verifyJwt(accessToken, ACCESS_TOKEN_SECRET);
-  if (!decoded) {
-    return AccessTokenErrorResponse(res, 'Unauthorized! Invalid token. Please login');
-  }
+  
+  if (!decoded) return AccessTokenErrorResponse(res, 'Unauthorized! Invalid token. Please login');
+
   res.locals.user = decoded;
 
   //verify user actually exists

@@ -11,7 +11,7 @@ import {
   response,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { BidService } from '../services';
+import { BidService, HouseService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
 import isAdmin from '../middleware/is_admin.middleware';
@@ -21,30 +21,37 @@ import { validateBodyDTO } from '../middleware/body.validation.middleware';
 import { CreateBidDTO, FindBidDTO, UpdateBidDTO } from '../dto/bid.dto';
 import { validateQueryDTO } from '../middleware/query.validation.middleware';
 import { MailController } from './mail.controller';
+import isTenant from '../middleware/is_tenant.middleware';
 
 @controller('/bid', isAuth)
 export class BidController {
   constructor(
     @inject(BidService) private bidService: BidService,
+    @inject(HouseService) private houseService: HouseService,
     @inject(MailController) private mailController: MailController,
   ) {}
 
-  @httpPost('/', validateBodyDTO(CreateBidDTO))
+  @httpPost('/', validateBodyDTO(CreateBidDTO), isTenant)
   async create(@request() req: Request, @response() res: Response) {
     try {
       req.body.UserId = res.locals.user.id;
       const data = await this.bidService.create(req.body);
 
-      if (!data)
-        return InternalErrorResponse(res, 'Unable to create bid. Ensure House and User exists.');
+      if (!data) return InternalErrorResponse(res, 'Unable to create bid. Ensure House exists');
 
-      // send mail notifying both tenant and landlord of bid
-      this.mailController.sendBidCreatedMail(
-        data?.User.email,
-        data?.House.User.email,
-        data?.House.title,
-        data?.status,
-      );
+      const houseData = await this.houseService.findOne({ id: req.body.HouseId });
+
+      if (houseData) {
+        // send mail notifying both tenant and landlord of bid
+        this.mailController.sendBidCreatedMail(
+          res.locals.user.email,
+          houseData?.User.email,
+          houseData?.title,
+          data?.status,
+        );
+      } else {
+        console.log('Unable to send bid creation mail. House not found.');
+      }
 
       return SuccessResponse(res, data);
     } catch (error: any) {
