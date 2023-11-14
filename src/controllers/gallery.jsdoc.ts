@@ -70,7 +70,7 @@
  *         description: Count of gallery entries retrieved successfully.
  *       '400':
  *         description: Bad request.
-*/
+ */
 
 /**
  * @swagger

@@ -8,7 +8,7 @@ class Transaction extends Model<ITransaction> {}
 Transaction.init(
   {
     senderId: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: User,
@@ -16,7 +16,7 @@ Transaction.init(
       },
     },
     recipientId: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: User,
@@ -24,7 +24,7 @@ Transaction.init(
       },
     },
     amount: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     deleted: {

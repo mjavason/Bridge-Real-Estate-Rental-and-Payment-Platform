@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { SuccessResponse, InternalErrorResponse, NotFoundResponse } from '../helpers/response';
-import { REDIS_OPTIONS } from '../constants';
+import { MESSAGES, REDIS_OPTIONS } from '../constants';
 import {
   controller,
   httpDelete,
@@ -10,29 +10,35 @@ import {
   response,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { GalleryService } from '../services';
+import { TransactionService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
+import isAdmin from '../middleware/is_admin.middleware';
 import { UniqueIdDTO } from '../dto/unique_id.dto';
 import { validateParamsDTO } from '../middleware/params.validation.middleware';
 import redisClient from '../config/redis';
-
-import { CreateGalleryDTO, UpdateGalleryDTO, FindGalleryDTO } from '../dto/gallery.dto';
+import {
+  CreateTransactionDTO,
+  UpdateTransactionDTO,
+  FindTransactionDTO,
+} from '../dto/transaction.dto'; // Import the newly created DTOs
 import { validateBodyDTO } from '../middleware/body.validation.middleware';
 import { validateQueryDTO } from '../middleware/query.validation.middleware';
-import isAdmin from '../middleware/is_admin.middleware';
 
-@controller('/gallery', isAuth)
-export class GalleryController {
-  constructor(@inject(GalleryService) private galleryService: GalleryService) {}
+@controller('/transaction', isAuth)
+export class TransactionController {
+  constructor(@inject(TransactionService) private transactionService: TransactionService) {}
 
-  @httpPost('/', validateBodyDTO(CreateGalleryDTO))
+  @httpPost('/', validateBodyDTO(CreateTransactionDTO))
   async create(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.galleryService.create(req.body);
+      const data = await this.transactionService.create(req.body);
 
       if (!data)
-        return InternalErrorResponse(res, 'Unable to create gallery entry. Ensure House exists.');
+        return InternalErrorResponse(
+          res,
+          'Unable to create transaction entry. Ensure House exists.',
+        );
 
       return SuccessResponse(res, data);
     } catch (error: any) {
@@ -40,10 +46,10 @@ export class GalleryController {
     }
   }
 
-  @httpGet('/exists', validateQueryDTO(FindGalleryDTO))
+  @httpGet('/exists', validateQueryDTO(FindTransactionDTO))
   async exists(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.galleryService.exists(req.query);
+      const data = await this.transactionService.exists(req.query);
 
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, []);
@@ -58,10 +64,10 @@ export class GalleryController {
     }
   }
 
-  @httpGet('/count', validateQueryDTO(FindGalleryDTO))
+  @httpGet('/count', validateQueryDTO(FindTransactionDTO))
   async getCount(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.galleryService.count(req.query);
+      const data = await this.transactionService.count(req.query);
 
       // If nothing exists, return 0 as the count
       if (!data) return SuccessResponse(res, { data: 0 });
@@ -76,10 +82,10 @@ export class GalleryController {
     }
   }
 
-  @httpGet('/', validateQueryDTO(FindGalleryDTO))
+  @httpGet('/', validateQueryDTO(FindTransactionDTO))
   async find(@request() req: Request, @response() res: Response) {
     try {
-      const data = await this.galleryService.find(req.query);
+      const data = await this.transactionService.find(req.query);
 
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
@@ -94,7 +100,7 @@ export class GalleryController {
     }
   }
 
-  @httpGet('/:pagination')
+  @httpGet('/:pagination', validateParamsDTO(FindTransactionDTO))
   async getAll(@request() req: Request, @response() res: Response) {
     try {
       let pagination = parseInt(req.params.pagination);
@@ -103,7 +109,7 @@ export class GalleryController {
 
       pagination = (pagination - 1) * 10;
 
-      const data = await this.galleryService.getAll(pagination);
+      const data = await this.transactionService.getAll(pagination);
 
       if (!data) return InternalErrorResponse(res);
       if (data.length === 0) return NotFoundResponse(res);
@@ -118,15 +124,15 @@ export class GalleryController {
     }
   }
 
-  @httpPost('/:id', validateParamsDTO(UniqueIdDTO), validateBodyDTO(UpdateGalleryDTO))
+  @httpPost('/:id', validateParamsDTO(UniqueIdDTO), validateBodyDTO(UpdateTransactionDTO))
   async update(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.galleryService.update({ id: id }, req.body);
+      const data = await this.transactionService.update({ id: id }, req.body);
 
       if (!data) return NotFoundResponse(res);
 
-      return SuccessResponse(res, data, 'Gallery entry updated successfully');
+      return SuccessResponse(res, data, MESSAGES.UPDATED);
     } catch (error: any) {
       return InternalErrorResponse(res, error.message);
     }
@@ -137,11 +143,11 @@ export class GalleryController {
   async hardDelete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.galleryService.hardDelete({ id: id });
+      const data = await this.transactionService.hardDelete({ id: id });
 
       if (!data) return NotFoundResponse(res);
 
-      return SuccessResponse(res, data, 'Gallery entry permanently deleted');
+      return SuccessResponse(res, data, MESSAGES.DELETED);
     } catch (error: any) {
       return InternalErrorResponse(res, error.message);
     }
@@ -151,11 +157,11 @@ export class GalleryController {
   async delete(@request() req: Request, @response() res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.galleryService.softDelete({ id: id });
+      const data = await this.transactionService.softDelete({ id: id });
 
       if (!data) return NotFoundResponse(res);
 
-      return SuccessResponse(res, data, 'Gallery entry deleted');
+      return SuccessResponse(res, data, MESSAGES.DELETED);
     } catch (error: any) {
       return InternalErrorResponse(res, error.message);
     }

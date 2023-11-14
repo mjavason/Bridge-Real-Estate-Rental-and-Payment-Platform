@@ -9,3 +9,4 @@ export { UserService } from './user.service';
 export { GalleryService } from './gallery.service';
 export { HouseService } from './house.service';
 export { BidService } from './bid.service';
+export { TransactionService } from './transaction.service';
