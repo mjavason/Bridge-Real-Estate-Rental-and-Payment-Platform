@@ -205,6 +205,10 @@
  *           type: number
  *         recipientId:
  *           type: number
+ *         amount:
+ *           type: number
+ *           minimum: 0
+ *           exclusiveMinimum: true
  *
  *     UpdateTransactionDTO:
  *       type: object
@@ -213,6 +217,10 @@
  *           type: number
  *         recipientId:
  *           type: number
+ *         amount:
+ *           type: number
+ *           minimum: 0
+ *           exclusiveMinimum: true
  *         deleted:
  *           type: boolean
  *
@@ -225,4 +233,8 @@
  *           type: number
  *         recipientId:
  *           type: number
+ *         amount:
+ *           type: number
+ *           minimum: 0
+ *           exclusiveMinimum: true
  */
