@@ -52,6 +52,4 @@ Transaction.belongsTo(User, {
   as: 'recipient',
 });
 
-User.hasMany(Transaction);
-
 export default Transaction;

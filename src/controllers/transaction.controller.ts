@@ -37,7 +37,7 @@ export class TransactionController {
       if (!data)
         return InternalErrorResponse(
           res,
-          'Unable to create transaction entry. Ensure House exists.',
+          'Unable to create transaction entry. Ensure all users exist',
         );
 
       return SuccessResponse(res, data);

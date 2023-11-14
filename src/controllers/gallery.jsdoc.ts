@@ -26,6 +26,8 @@
  *         description: Gallery entry created successfully.
  *       '400':
  *         description: Bad request.
+ *       '500':
+ *         description: Unable to create bid, ensure foreign keys exist.
  */
 
 /**
