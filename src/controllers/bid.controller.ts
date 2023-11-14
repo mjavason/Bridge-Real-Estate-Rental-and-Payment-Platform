@@ -11,7 +11,7 @@ import {
   response,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { BidService, HouseService, UserService } from '../services';
+import { BidService, HouseService, TransactionService, UserService } from '../services';
 
 import isAuth from '../middleware/is_auth.middleware';
 import isAdmin from '../middleware/is_admin.middleware';
@@ -34,6 +34,7 @@ export class BidController {
     @inject(HouseService) private houseService: HouseService,
     @inject(UserService) private userService: UserService,
     @inject(MailController) private mailController: MailController,
+    @inject(TransactionService) private transactionService: TransactionService,
   ) {}
 
   @httpPost('/', validateBodyDTO(CreateBidDTO), isTenant)
@@ -81,7 +82,23 @@ export class BidController {
         data.amount,
       );
 
-      if (!landlordData) logger.error('Issue occured with updating landlords balance');
+      // Decrement tenants/bidders balance
+      const tenantData = await this.userService.incrementAccountBalance(
+        { id: data.User.id },
+        -data.amount,
+      );
+
+      // register the transaction
+      const transactionData = await this.transactionService.create({
+        senderId: data.User.id,
+        recipientId: data.House.User.id,
+        amount: data.amount,
+      });
+
+      if (!transactionData) logger.error('Issue occured with creating new transaction');
+
+      if (!landlordData || tenantData)
+        logger.error('Issue occured with updating landlords balance');
 
       //send mail notifying both tenant and landlord of bid update
       this.mailController.sendBidUpdateMail(
